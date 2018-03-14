@@ -1,3 +1,10 @@
+# Custom 
+
+**/entity_set/
+**/txt/
+**/pdf/
+**/xhtml/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
