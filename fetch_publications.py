@@ -103,6 +103,7 @@ def main():
     # Write papers information to CSV file
     write_arrays_to_csv(papers, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'])
 
+
 # Fetch number of named entities for each papers in specific journal with facet
 def fetch_paper_entities(paper_id, facet, db):
   papers_entities = {}
@@ -112,18 +113,6 @@ def fetch_paper_entities(paper_id, facet, db):
   for ne in results: entities.append(ne['word'])
 
   return list(set(entities))
-
-
-    # if not ne['paper_id'] in papers_entities.keys(): 
-    #   papers_entities[ne['paper_id']] = [ne['word'].lower()]
-    # else:
-    #   papers_entities[ne['paper_id']].append(ne['word'].lower())
-
-  # papers_entities = [(key,journal,len(val)) for key,val in papers_entities.items()]
-  
-  # print(f'{journal}: Fetched entities for {len(papers_entities)} papers')
-
-  return papers_entities
 
 # Write list of tuples to csv file
 def write_arrays_to_csv(array_list, booktitle, database, column_names):
