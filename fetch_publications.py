@@ -77,6 +77,7 @@ def main():
       file_path = f'{ROOTPATH}/data/{database}/{booktitle}/pdf/'
 
       # Have multiple PDF fetch methods: Direct EE link, Arxiv
+      # ADD ELSAPY
       if pub['ee'][-4:].lower() == '.pdf': 
         paper_info[1] = 'true'
         download_pdf(file_path, paper_info[5], database, booktitle, paper_info[0])
@@ -95,6 +96,7 @@ def main():
 
       # Get distinct #entities for total facets
       # ADD PROPER ENTITIES EXTRACTION
+      # ALSO DOWNLOAD FULL TEXT
       facets_entities = ''
       for facet in facets:
         entities = fetch_paper_entities(pub['_id'], facet, db)
@@ -127,7 +129,9 @@ def main():
       papers.append(paper_info)
       print(f'✓ {pub["_id"]}')
 
+
     # Write papers information to CSV file
+    # SAVE OLD FILE
     write_arrays_to_csv(papers, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'])
 
 # Fetch number of named entities for each papers in specific journal with facet
