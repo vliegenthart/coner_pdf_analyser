@@ -1,10 +1,11 @@
 # Custom 
 
 **/entity_set/
-**/txt/
+**/full_text/
 **/pdf/
 **/xhtml/
 elsapy_config.json
+todo.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

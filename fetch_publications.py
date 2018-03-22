@@ -63,7 +63,6 @@ def main():
     for pub in results:
       author1 = pub['authors'][0]
       counter_pub += 1
-      if counter_pub % 50 == 0: print("Processed:", counter_pub)
       title = pub['title'].lower().capitalize().strip('.')
       paper_info = [pub['_id'], 'false', '-1;-1', '-1', booktitle, pub['ee'], pub['year'], "'%s'" % title, pub['type'], 'author1;author2']
       no_accent_author1 = unidecode.unidecode(author1)
@@ -74,13 +73,13 @@ def main():
         authors += f'{author};'
       paper_info[9] = authors.strip(';')
 
-      file_path = f'{ROOTPATH}/data/{database}/{booktitle}/pdf/'
+      pdf_file_path = f'{ROOTPATH}/data/{database}/{booktitle}/pdf/'
 
       # Have multiple PDF fetch methods: Direct EE link, Arxiv
       # ADD ELSAPY
       if pub['ee'][-4:].lower() == '.pdf': 
         paper_info[1] = 'true'
-        download_pdf(file_path, paper_info[5], database, booktitle, paper_info[0])
+        download_pdf(pdf_file_path, paper_info[5], database, booktitle, paper_info[0])
       else:
         arxiv_query=f'au:{author1}+AND+ti:{title}'
         articles = arxiv.query(search_query=arxiv_query)
@@ -89,14 +88,16 @@ def main():
             if art['title'].lower().capitalize().strip('.') == title:
               paper_info[5] = art['pdf_url']
               paper_info[1] = 'true'
-              arxiv.download(art, file_path)
-              os.rename(f'{file_path}{art["title"]}.pdf', f'{file_path}{paper_info[0]}.pdf')
+              arxiv.download(art, pdf_file_path)
+              os.rename(f'{pdf_file_path}{art["title"]}.pdf', f'{pdf_file_path}{paper_info[0]}.pdf')
 
               print(f'Finished PDF download for {paper_info[0]}')
 
+      # Download full text
+      if 'content' in pub.keys() and 'fulltext' in pub['content'].keys(): write_full_text_file(paper_info[0], database, booktitle, pub['content']['fulltext'])
+
       # Get distinct #entities for total facets
       # ADD PROPER ENTITIES EXTRACTION
-      # ALSO DOWNLOAD FULL TEXT
       facets_entities = ''
       for facet in facets:
         entities = fetch_paper_entities(pub['_id'], facet, db)
@@ -108,7 +109,8 @@ def main():
       paper_info[2] = facets_entities.strip(';')
 
       # Only fetch citations if a PDF has been downloaded
-      if paper_info[1] == 'true':      
+      if paper_info[1] == 'true':  
+        counter_pdf += 1    
         # Get number of citations info
         scholar_query.set_author(no_accent_author1)
         scholar_query.set_phrase(title)
@@ -129,10 +131,15 @@ def main():
       papers.append(paper_info)
       print(f'✓ {pub["_id"]}')
 
+      # Write papers information to CSV file
+      if counter_pub % 50 == 0: 
+        print('----- STATISTICS -----')
+        print("Processed:", counter_pub)
+        write_arrays_to_csv(papers, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'])
+        print(f'PDFs downloaded for {counter_pdf}/{counter_pub} publications for {booktitle}')
+        print('----------------------')
 
-    # Write papers information to CSV file
-    # SAVE OLD FILE
-    write_arrays_to_csv(papers, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'])
+    # SAVE OVERVIEW OLD FILE
 
 # Fetch number of named entities for each papers in specific journal with facet
 def fetch_paper_entities(paper_id, facet, db):
@@ -162,6 +169,14 @@ def write_entity_set_file(paper_id, booktitle, entities, database, facet):
   with open(file_path, 'w+') as outputFile:
     for e in entities:
       outputFile.write(f'{e}\n')
+
+def write_full_text_file(paper_id, database, booktitle, full_text):
+  file_path = f'{ROOTPATH}/data/{database}/{booktitle.lower()}/full_text/{paper_id}.txt'
+  os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+  file = open(file_path, 'w+')
+  file.write(full_text)
+  file.close()
 
 def download_pdf(file_path, download_url, database, booktitle, paper_name):
   os.makedirs(os.path.dirname(file_path), exist_ok=True)
