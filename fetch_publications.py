@@ -37,7 +37,7 @@ def main():
 
   client = MongoClient('localhost:4321')
   db = client.pub
-  booktitles = ['WWW']
+  booktitles = ['JCDL']
 
   # ########################### #
   #      FETCH PUBLICATIONS     #
