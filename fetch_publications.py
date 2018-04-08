@@ -37,7 +37,7 @@ def main():
 
   client = MongoClient('localhost:4321')
   db = client.pub
-  booktitles = ['JCDL']
+  booktitles = ['ECDL']
 
   # ########################### #
   #      FETCH PUBLICATIONS     #
@@ -46,14 +46,14 @@ def main():
   # print("Fetching publication information from TSE-NER server; publication attributes, has_pdf, number_entities, #citations_pub, #citations_author: ")
 
   for booktitle in booktitles:
-    print(f'Fetching publications information for conference: {booktitle}')
     papers = []
     paper_info = [] #[_id, number_entities, year, ee, dblpkey, journal, title, type]
     counter_pub = 0
     counter_pdf = 0
     facets_columns = ';'.join(facets)
-    results = db.publications.find({ 'booktitle': booktitle }).limit(number_papers)
-    
+    results = db.publications.find({ 'booktitle': booktitle }).limit(number_papers).batch_size(100)
+    print(f'Fetching {results.count()} publications information for conference: {booktitle}')
+
     scholar.ScholarConf.COOKIE_JAR_FILE = ROOTPATH + ".scholar-cookies.txt"
     querier = scholar.ScholarQuerier()
     settings = scholar.ScholarSettings()
@@ -61,6 +61,7 @@ def main():
     scholar_query = scholar.SearchScholarQuery()
 
     for pub in results:
+      if not pub['title']: continue
       author1 = pub['authors'][0]
       counter_pub += 1
       title = pub['title'].lower().capitalize().strip('.')
@@ -74,6 +75,7 @@ def main():
       paper_info[9] = authors.strip(';')
 
       pdf_file_path = f'{ROOTPATH}/data/{database}/{booktitle}/pdf/'
+      os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
 
       # Have multiple PDF fetch methods: Direct EE link, Arxiv
       # ADD ELSAPY
@@ -139,6 +141,7 @@ def main():
         print(f'PDFs downloaded for {counter_pdf}/{counter_pub} publications for {booktitle}')
         print('----------------------')
 
+    print(f'Finished processing {counter_pub} publications and downloading {counter_pdf} PDFs for {booktitle}')
     # SAVE OVERVIEW OLD FILE
 
 # Fetch number of named entities for each papers in specific journal with facet
