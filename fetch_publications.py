@@ -37,7 +37,7 @@ def main():
 
   client = MongoClient('localhost:4321')
   db = client.pub
-  booktitles = ['ECDL']
+  booktitles = ['ESWC']
 
   # ########################### #
   #      FETCH PUBLICATIONS     #
@@ -61,7 +61,7 @@ def main():
     scholar_query = scholar.SearchScholarQuery()
 
     for pub in results:
-      if not pub['title']: continue
+      if not pub['title'] or not pub['authors']: continue
       author1 = pub['authors'][0]
       counter_pub += 1
       title = pub['title'].lower().capitalize().strip('.')
@@ -74,7 +74,7 @@ def main():
         authors += f'{author};'
       paper_info[9] = authors.strip(';')
 
-      pdf_file_path = f'{ROOTPATH}/data/{database}/{booktitle}/pdf/'
+      pdf_file_path = f'{ROOTPATH}/data/{database}/{booktitle.lower()}/pdf/'
       os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
 
       # Have multiple PDF fetch methods: Direct EE link, Arxiv
@@ -90,8 +90,8 @@ def main():
             if art['title'].lower().capitalize().strip('.') == title:
               paper_info[5] = art['pdf_url']
               paper_info[1] = 'true'
-              arxiv.download(art, pdf_file_path)
-              os.rename(f'{pdf_file_path}{art["title"]}.pdf', f'{pdf_file_path}{paper_info[0]}.pdf')
+              arxiv.download(art, pdf_file_path, slugify=True)
+              os.rename(f'{pdf_file_path}{to_slug(art["title"])}.pdf', f'{pdf_file_path}{paper_info[0]}.pdf')
 
               print(f'Finished PDF download for {paper_info[0]}')
 
@@ -190,6 +190,13 @@ def download_pdf(file_path, download_url, database, booktitle, paper_name):
   file.write(response.data)
   file.close()
   print(f'Finished PDF download for {paper_name}')
+
+def to_slug(title):
+  # Remove special characters
+  filename = ''.join(c if c.isalnum() else '_' for c in title)
+  # delete duplicate underscores
+  filename = '_'.join(list(filter(None, filename.split('_'))))
+  return filename
 
 if __name__=='__main__':
   main()
