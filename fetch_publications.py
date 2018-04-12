@@ -7,6 +7,9 @@ import operator
 import csv
 import re
 import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 import os
 from config import booktitles, ROOTPATH, facets
 from lib import scholar
@@ -28,16 +31,19 @@ def main():
   parser = argparse.ArgumentParser(description='Fetch all information for papers')
   parser.add_argument('database', metavar='Database', type=str,
                      help='database name of data collection')
+  parser.add_argument('starting_index', metavar='Starting Index', type=int,
+                     help='starting index of returned Mongodb collection')
   parser.add_argument('number_papers', metavar='Number of Papers', type=int,
                      help='number of papers to be downloaded')
 
   args = parser.parse_args()
   database = args.database
   number_papers = args.number_papers
+  starting_index = args.starting_index
 
   client = MongoClient('localhost:4321')
   db = client.pub
-  booktitles = ['ESWC']
+  booktitles = ['ACL']
 
   # ########################### #
   #      FETCH PUBLICATIONS     #
@@ -51,7 +57,7 @@ def main():
     counter_pub = 0
     counter_pdf = 0
     facets_columns = ';'.join(facets)
-    results = db.publications.find({ 'booktitle': booktitle }).limit(number_papers).batch_size(100)
+    results = db.publications.find({ 'booktitle': booktitle }).skip(starting_index-1).limit(number_papers).batch_size(100)
     print(f'Fetching {results.count()} publications information for conference: {booktitle}')
 
     scholar.ScholarConf.COOKIE_JAR_FILE = ROOTPATH + ".scholar-cookies.txt"
