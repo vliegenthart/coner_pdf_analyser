@@ -31,15 +31,18 @@ def main():
   parser = argparse.ArgumentParser(description='Fetch all information for papers')
   parser.add_argument('database', metavar='Database', type=str,
                      help='database name of data collection')
-  parser.add_argument('starting_index', metavar='Starting Index', type=int,
-                     help='starting index of returned Mongodb collection')
   parser.add_argument('number_papers', metavar='Number of Papers', type=int,
                      help='number of papers to be downloaded')
+  parser.add_argument('skip_items', metavar='Number items to skip', type=int,
+                     help='number of items to skip from returned collection')
+  parser.add_argument('version', metavar='Version of overview csv', type=int,
+                     help='versioning number used to name overview csv for databases')
 
   args = parser.parse_args()
   database = args.database
   number_papers = args.number_papers
-  starting_index = args.starting_index
+  skip_items = args.skip_items
+  version = args.version
 
   client = MongoClient('localhost:4321')
   db = client.pub
@@ -57,7 +60,7 @@ def main():
     counter_pub = 0
     counter_pdf = 0
     facets_columns = ';'.join(facets)
-    results = db.publications.find({ 'booktitle': booktitle }).skip(starting_index-1).limit(number_papers).batch_size(100)
+    results = db.publications.find({ 'booktitle': booktitle }).skip(skip_items).limit(number_papers).batch_size(100)
     print(f'Fetching {results.count()} publications information for conference: {booktitle}')
 
     scholar.ScholarConf.COOKIE_JAR_FILE = ROOTPATH + ".scholar-cookies.txt"
@@ -143,7 +146,7 @@ def main():
       if counter_pub % 50 == 0: 
         print('----- STATISTICS -----')
         print("Processed:", counter_pub)
-        write_arrays_to_csv(papers, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'])
+        write_arrays_to_csv(papers, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'], skip_items, version)
         print(f'PDFs downloaded for {counter_pdf}/{counter_pub} publications for {booktitle}')
         print('----------------------')
 
@@ -161,8 +164,8 @@ def fetch_paper_entities(paper_id, facet, db):
   return list(set(entities))
 
 # Write list of tuples to csv file
-def write_arrays_to_csv(array_list, booktitle, database, column_names):
-  file_path = f'{ROOTPATH}/data/{database}/{booktitle.lower()}/{booktitle.lower()}_papers_overview.csv'
+def write_arrays_to_csv(array_list, booktitle, database, column_names, skip=0, version=1):
+  file_path = f'{ROOTPATH}/data/{database}/{booktitle.lower()}/{booktitle.lower()}_papers_overview_{skip}_v{version}.csv'
   os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
   with open(file_path, 'w+') as outputFile:
