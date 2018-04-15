@@ -4,8 +4,10 @@
 **/full_text/
 **/pdf/
 **/xhtml/
+**/data/*/
 elsapy_config.json
 todo.txt
+**/*/.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

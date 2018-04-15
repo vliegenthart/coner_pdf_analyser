@@ -1,6 +1,11 @@
 # @author Daniel Vliegenthart
 # Fetch data and write information files for certain number of papers information
 
+# TODO:
+# - Rerun scripts for +- 1-50 extra documents
+# - Update config numbers for total papers based on csv file
+# - Chechk if pdf_ur correct
+
 import argparse
 from pymongo import MongoClient
 import operator
@@ -46,7 +51,7 @@ def main():
 
   client = MongoClient('localhost:4321')
   db = client.pub
-  booktitles = ['ACL']
+  booktitles = ['JCDL']
 
   # ########################### #
   #      FETCH PUBLICATIONS     #
@@ -63,7 +68,7 @@ def main():
     results = db.publications.find({ 'booktitle': booktitle }).skip(skip_items).limit(number_papers).batch_size(100)
     print(f'Fetching {results.count()} publications information for conference: {booktitle}')
 
-    scholar.ScholarConf.COOKIE_JAR_FILE = ROOTPATH + ".scholar-cookies.txt"
+    # scholar.ScholarConf.COOKIE_JAR_FILE = ROOTPATH + ".scholar-cookies.txt"
     querier = scholar.ScholarQuerier()
     settings = scholar.ScholarSettings()
     querier.apply_settings(settings)
@@ -143,13 +148,18 @@ def main():
       print(f'✓ {pub["_id"]}')
 
       # Write papers information to CSV file
-      if counter_pub % 50 == 0: 
+      if counter_pub % 50 is 0: 
         print('----- STATISTICS -----')
         print("Processed:", counter_pub)
         write_arrays_to_csv(papers, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'], skip_items, version)
         print(f'PDFs downloaded for {counter_pdf}/{counter_pub} publications for {booktitle}')
         print('----------------------')
 
+    print('----- FINAL STATISTICS -----')
+    print("Processed:", counter_pub)
+    write_arrays_to_csv(papers, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'], skip_items, version)
+    print(f'PDFs downloaded for {counter_pdf}/{counter_pub} publications for {booktitle}')
+    print('-----------------------')
     print(f'Finished processing {counter_pub} publications and downloading {counter_pdf} PDFs for {booktitle}')
     # SAVE OVERVIEW OLD FILE
 
