@@ -51,7 +51,7 @@ def main():
 
   client = MongoClient('localhost:4321')
   db = client.pub
-  booktitles = ['JCDL']
+  booktitles = ['ACL']
 
   # ########################### #
   #      FETCH PUBLICATIONS     #
@@ -66,7 +66,7 @@ def main():
     counter_pdf = 0
     facets_columns = ';'.join(facets)
     results = db.publications.find({ 'booktitle': booktitle }).skip(skip_items).limit(number_papers).batch_size(100)
-    print(f'Fetching {results.count()} publications information for conference: {booktitle}')
+    print(f'Fetching {results.count(True)} out of {results.count()} total publications information for conference: {booktitle}')
 
     # scholar.ScholarConf.COOKIE_JAR_FILE = ROOTPATH + ".scholar-cookies.txt"
     querier = scholar.ScholarQuerier()
@@ -134,21 +134,17 @@ def main():
         querier.send_query(scholar_query)
         querier.save_cookies()
 
-        # # Print the URL of the first article found
+        # Print the URL of the first article found
         if querier.articles and title == querier.articles[0]['title'].lower().capitalize().strip('.'):
           print(f'Fetched number citations for {paper_info[0]}: {querier.articles[0]["num_citations"]}')
           paper_info[3] = querier.articles[0]['num_citations']
-
-          # print(querier.articles[0]['title'], ":", querier.articles[0]['num_citations'], querier.articles[0]['url_pdf'])
-        # print(querier.articles[0]['num_citations'], querier.articles[0]['url_pdf'])
-
 
       # Add paper information to list
       papers.append(paper_info)
       print(f'✓ {pub["_id"]}')
 
       # Write papers information to CSV file
-      if counter_pub % 50 is 0: 
+      if counter_pub % 20 is 0: 
         print('----- STATISTICS -----')
         print("Processed:", counter_pub)
         write_arrays_to_csv(papers, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'], skip_items, version)

@@ -2,6 +2,8 @@
 Coner Collaborative NER Pipeline Component: Analyse documents (PDFs)
 
 ## Scripts Description
+Run these scripts in this order to generate entity annotations for desired PDF papers: 
+
 - fetch_publications.py:
   - Parameters: name of database data folder, number of papers to fetch from database, number of items to skip from returned collection, versioning number used to name overview csv for databases
   - Description: Fetches papers from conferences as indicated in the 'booktitles' array; meta-data from server, various download methods for PDF, full text and number of citations retrieval
@@ -15,4 +17,5 @@ Coner Collaborative NER Pipeline Component: Analyse documents (PDFs)
   - Example script execution: `python generate_pdfs_overview.py tse_ner` 
   - Booktitles usage should be set in the script itself
 
-
+- run_pdfnlt_postprocess.sh
+  - Run `rvm install jruby-9.1.13.0@pdfnlt`
