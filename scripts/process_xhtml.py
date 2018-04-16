@@ -6,6 +6,7 @@ import json
 import jsonpickle
 import pprint
 from tqdm import tqdm, trange
+import os
 
 def read_xhtml(file_path):
   xhtml = open(file_path, 'r').read()
@@ -13,12 +14,12 @@ def read_xhtml(file_path):
 
   return xhtml_soup
 
-def enrich_xhtml(pdf_term_list, xhtml_soup, database, facet, pdf_name):
+def enrich_xhtml(pdf_term_list, xhtml_soup, database, facet, pdf_name, booktitle):
 
   pdf_terms_pages = [[] for _ in range(1000)]
   output_entity_json = "["
 
-  print(f'{pdf_name}: Enriching XHTML and writing JSON result files...')
+  print(f'{pdf_name} - {facet}: Enriching XHTML and writing JSON result files...')
   # print("Progress entities analysis:")
   pbar = tqdm(total=len(pdf_term_list))
 
@@ -67,18 +68,28 @@ def enrich_xhtml(pdf_term_list, xhtml_soup, database, facet, pdf_name):
   pbar.close()
 
   # print(f'Writing JSON file with entity information to json/{pdf_name}_entities.json...')
+  base_path = f'data/{database}/{booktitle.lower()}'
+  json_path = f'{base_path}/json/'
+  xhtml_path = f'data/xhtml_enriched/'
 
-  with open(f'data/{database}/json/{facet}_{pdf_name}_entities.json', 'w+') as outputFile:
+  os.makedirs(os.path.dirname(json_path), exist_ok=True)
+  os.makedirs(os.path.dirname(xhtml_path), exist_ok=True)
+  
+  with open(f'{json_path}{facet}_{pdf_name}_entities.json', 'w+') as outputFile:
     outputFile.write(output_entity_json + "\n")
 
   # print(f'Writing JSON file with PDFTerms per page information to json/{pdf_name}_pdf_terms_pages.json...')
   
-  with open(f'data/{database}/json/{facet}_{pdf_name}_pdf_terms_pages.json', 'w+') as outputFile:
+  with open(f'{json_path}{facet}_{pdf_name}_pdf_terms_pages.json', 'w+') as outputFile:
     outputFile.write(jsonpickle.encode(pdf_terms_pages) + "\n")
 
   # print(f'Writing XHTML file with entity information added to xhtml/{pdf_name}.xhtml...')
 
-  with open(f'data/{database}/xhtml/{pdf_name}.xhtml', 'w+') as outputFile:
+  body = xhtml_soup.find("body")
+  body['class'] = body.get('class', []) + [f'enriched-{facet}']
+
+  with open(f'{xhtml_path}{pdf_name}.xhtml', 'w+') as outputFile:
     outputFile.write(str(xhtml_soup.prettify()))
+
 
 
