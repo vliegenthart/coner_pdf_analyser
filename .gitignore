@@ -8,7 +8,9 @@
 elsapy_config.json
 todo.txt
 **/.DS_Store
+**/*/.DS_Store
 config.py
+.ruby-version
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
