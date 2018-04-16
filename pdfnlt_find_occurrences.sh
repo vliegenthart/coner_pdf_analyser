@@ -141,9 +141,7 @@ echo "PDF_DIR: $pdf_dir"
 
 echo $'Setting up statistics...\n'
 mkdir -p "logging"
-cp -R "logging/statistics.log" "logging/OLD_statistics.log" || :
-rm "logging/statistics.log"
-touch "logging/statistics.log"
+touch -a "logging/statistics.log"
 
 echo "--------------------------------------"
 echo "-     RUNNING PDFNLT POSTPROCESS     -"
@@ -173,6 +171,7 @@ echo "Running PDFNLT postprocessing for $pdf_dir..."
 # bash -x "$script/../PDFNLT/postprocess/postprocess.sh" "$pdf_dir"
 
 rvm use jruby-9.1.13.0@pdfnlt
+
 if [ -n "$force" ]
 then
   # NOTE: Have to manually change pdf loading directory to match database
@@ -181,8 +180,16 @@ else
   sh "../PDFNLT/postprocess/postprocess.sh" "$pdf_dir"
 fi
 
+echo "----------------------------------------"
+echo "-     FIND ENTITIES & ENRICH XHTML     -"
+echo "----------------------------------------"
+
+python scripts/find_entity_occurrences.py tse_ner
+
 # TO DEBUG RUN SINGLE PAPER FOR NEXT EXECUTION
 # rm "../PDFNLT/pdfanalyzer/train/TUD-LTE.csv"
+
+
 
 
 

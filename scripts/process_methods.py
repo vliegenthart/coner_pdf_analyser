@@ -8,6 +8,7 @@ import re
 from class_definitions import Entity, PDFTerm, PDFWord
 from lib.sliding_window import sliding_window
 import statistics
+from config import PDFNLT_PATH
 
 # all occurences of 1 entity in 1 documents are pdfterms under that entity: entity.pdf_terms
 # Each term consists of it's subwords in the document
@@ -130,7 +131,7 @@ def find_pdf_terms_in_sent_tsv(database, facet, pdf_name, booktitle):
 
   entity_set = read_entity_set(f'data/{database}/{booktitle.lower()}/entity_set/{facet}_{pdf_name}_entity_set_0.txt')
 
-  sent_list, sent_obj, error_sents = process_sentences(f'../PDFNLT/pdfanalyzer/text/{pdf_name}.sent.tsv', pdf_name)
+  sent_list, sent_obj, error_sents = process_sentences(f'{PDFNLT_PATH}/text/{pdf_name}.sent.tsv', pdf_name)
 
   pdf_term_info_list = create_terms_info(entity_set, sent_list, sent_obj)
 
