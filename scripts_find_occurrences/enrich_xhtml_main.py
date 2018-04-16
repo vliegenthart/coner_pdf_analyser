@@ -43,11 +43,13 @@ def main():
   # TODO:
   # Create separate config file for more beautiful setup
 
-  # statistics.init()
+  statistics.init()
+  statistics.log_stat(f'| Processing: {pdf_name.lower()} |')
 
   # ############################### #
   #      ENRICH XHTML WITH TERMS    #
   # ############################### #
+
 
 
   pdf_term_info_list = find_pdf_terms_in_sent_tsv(database, facet, pdf_name, booktitle)

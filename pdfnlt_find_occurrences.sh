@@ -139,6 +139,12 @@ echo "PDF_DIR: $pdf_dir"
 #      PROCESS PDFS     #
 # ##################### #
 
+echo $'Setting up statistics...\n'
+mkdir -p "logging"
+cp -R "logging/statistics.log" "logging/OLD_statistics.log" || :
+rm "logging/statistics.log"
+touch "logging/statistics.log"
+
 echo "--------------------------------------"
 echo "-     RUNNING PDFNLT POSTPROCESS     -"
 echo "--------------------------------------"
