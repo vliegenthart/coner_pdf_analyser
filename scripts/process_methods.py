@@ -111,7 +111,7 @@ def create_terms_info(entity_set, sent_list, sent_obj):
               chunk_words = ' '.join(word_info['text'] for word_info in chunk)
               if entity.text == chunk_words:
 
-                pdf_term = PDFTerm(sent['sent_id'], entity.id)
+                pdf_term = PDFTerm(sent['sent_id'], entity.id, None, entity.text)
                 for word in chunk:
                   pdf_term.pdf_words.append(PDFWord(word['text'], word['word_id'], pdf_term.id))
 
