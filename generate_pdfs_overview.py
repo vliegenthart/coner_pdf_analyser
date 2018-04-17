@@ -1,26 +1,19 @@
 # @author Daniel Vliegenthart
 # Generate pdfs overview files for booktitles
 
-
 import argparse
-from pymongo import MongoClient
 import operator
 import csv
 import re
 import urllib3
 from operator import itemgetter
 from statistics import mean
+import os
+from config import booktitles, ROOTPATH, facets
+import unidecode
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-import os
-from config import booktitles, ROOTPATH, facets
-from lib import scholar
-# https://github.com/lukasschwab/arxiv.py
-# https://github.com/titipata/arxivpy
-import arxiv
-
-import unidecode
 
 def main():
 
@@ -37,11 +30,9 @@ def main():
   facets_columns = ';'.join(facets)
   booktitles = ['ICWSM']
 
-  # ########################### #
-  #      FETCH PUBLICATIONS     #
-  # ########################### #
-
-  # print("Fetching publication information from TSE-NER server; publication attributes, has_pdf, number_entities, #citations_pub, #citations_author: ")
+  # ############################### #
+  #      GENERATE OVERVIEW FILES    #
+  # ############################### #
 
   for booktitle in booktitles:
     papers = read_overview_csv(database, booktitle, 0, 1)

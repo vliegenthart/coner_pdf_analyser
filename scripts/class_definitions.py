@@ -28,7 +28,7 @@ class Entity(object):
 class PDFTerm(object):
 
   # PDFTerm can consist of multiple words
-  def __init__(self,sent_id, entity_id=None, pdf_words=None):
+  def __init__(self,sent_id, entity_id=None, pdf_words=None, text=''):
     if pdf_words is None: pdf_words = []
     self.type = "PDFTerm"
     self.id = id(self)
@@ -36,12 +36,13 @@ class PDFTerm(object):
     self.pdf_words = pdf_words 
     self.entity_id = entity_id
     self.page_number = ""
+    self.text = text
 
   def __str__(self):
-    return f'<PDFTerm: {self.entity_id}, sent_id: {self.sent_id}, #pdf_words: {len(self.pdf_words)}, pdf_words: {self.pdf_words}, page_number: {self.page_number}>'
+    return f'<PDFTerm: {self.entity_id}, text: {self.text}, sent_id: {self.sent_id}, #pdf_words: {len(self.pdf_words)}, pdf_words: {self.pdf_words}, page_number: {self.page_number}>'
 
   def __repr__(self):
-    return f'<PDFTerm: {self.entity_id}, sent_id: {self.sent_id}, #pdf_words: {len(self.pdf_words)}, pdf_words: {self.pdf_words}, page_number: {self.page_number}>'
+    return f'<PDFTerm: {self.entity_id}, text: {self.text}, sent_id: {self.sent_id}, #pdf_words: {len(self.pdf_words)}, pdf_words: {self.pdf_words}, page_number: {self.page_number}>'
 
   def __dumps__(self):
     self.__dict__
