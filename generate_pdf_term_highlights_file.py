@@ -45,7 +45,7 @@ def main():
 
       pdf_terms_pages = json.load(open(f'{json_path}/{facet}_{file_name}_pdf_terms_pages.json'))
       term_highlights = generate_term_highlights(pdf_terms_pages, file_name, facet)
-      write_highlights_js(term_highlights, file_name)
+      write_highlights_json(term_highlights, file_name)
 
 # Generate array of terms meta-data like position, comment, content and id
 def generate_term_highlights(pdf_terms, file_name, facet):
@@ -59,7 +59,7 @@ def generate_term_highlights(pdf_terms, file_name, facet):
       # if i2 > 2: continue
  
       words_processed = 1
-      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'comment': { 'text': '', 'facet': facet}, 'id': term['id'] }
+      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'comment': { 'text': '', 'facet': facet}, 'id': term['id'], 'type': 'automatic' }
 
       # Calculate position boundingRect and word rects
       bdr = term['pdf_words'][0]['bdr'].split(',')
@@ -113,7 +113,20 @@ def write_highlights_js(highlights, file_name):
 
   len_highlights = len(highlights[f'{file_name}.pdf'])
   
-  print(f'Generated {len_highlights} highlights for {file_name}.pdf: {file_path}')
+  print(f'Generated {len_highlights} highlights (JS) for {file_name}.pdf: {file_path}')
+
+# Write the array of highlights to json file
+def write_highlights_json(highlights, file_name):
+  file_content = json.dumps(highlights, indent=2)
+  file_path = f'/data/highlight/{file_name}-highlights.json'
+  os.makedirs(os.path.dirname(ROOTPATH + file_path), exist_ok=True)
+
+  with open(ROOTPATH + file_path, 'w+') as file:
+    file.write(file_content)
+
+  len_highlights = len(highlights[f'{file_name}.pdf'])
+  
+  print(f'Generated {len_highlights} highlights (JSON) for {file_name}.pdf: {file_path}')
 
 if __name__=='__main__':
   main()
