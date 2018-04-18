@@ -16,6 +16,9 @@ from PIL import Image
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# TODO
+# - Automatically copy generated highlights files to react app
+
 
 def main():
 
@@ -30,8 +33,7 @@ def main():
 
   args = parser.parse_args()
   database = args.database
-  # UPDATE TO CONFIG FACETS AFTER DONE TESTING
-  facets = ['method']
+  
 
   # ####################################### #
   #      CONVERT TERMS JSON TO REACT JS     #
@@ -39,18 +41,21 @@ def main():
 
   # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
   for file_name in os.listdir(f'data/xhtml_enriched/'):
+    file_name = file_name.strip(".xhmtl")
+    term_highlights = { f'{file_name}.pdf': [] }
+
     for facet in facets:
-      file_name = file_name.strip(".xhmtl")
       booktitle = file_name.split("_")[1]
       json_path = f'data/{database}/{booktitle}/json'
 
       pdf_terms_pages = json.load(open(f'{json_path}/{facet}_{file_name}_pdf_terms_pages.json'))
-      term_highlights = generate_term_highlights(pdf_terms_pages, file_name, facet)
-      write_highlights_js(term_highlights, file_name)
+      term_highlights[f'{file_name}.pdf'] += generate_term_highlights(pdf_terms_pages, file_name, facet)
+    
+    write_highlights_js(term_highlights, file_name)
 
 # Generate array of terms meta-data like position, comment, content and id
 def generate_term_highlights(pdf_terms, file_name, facet):
-  highlights = { f'{file_name}.pdf': []}
+  highlights = []
   number_pages = len(pdf_terms)
 
   # Get pdf page width/height ratio
@@ -64,7 +69,7 @@ def generate_term_highlights(pdf_terms, file_name, facet):
       # if i2 > 2: continue
 
       words_processed = 1
-      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'comment': { 'text': '', 'facet': facet}, 'id': term['id'], 'type': 'automatic' }
+      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'comment': { 'text': '', 'facet': facet}, 'id': str(term['id']), 'type': 'automatic' }
 
       # Calculate position boundingRect and word rects
       bdr = bdr_to_coord(term['pdf_words'][0]['bdr'].split(','), page_width, page_height)
@@ -103,7 +108,7 @@ def generate_term_highlights(pdf_terms, file_name, facet):
       highlight['position']['rects'] = rects.copy()
 
       if len(term['pdf_words']) == words_processed:
-        highlights[f'{file_name}.pdf'].append(highlight)
+        highlights.append(highlight)
 
   return highlights
 
@@ -120,7 +125,8 @@ def bdr_to_coord(bdr, page_width, page_height):
 
 # Write the array of highlights to ES6 JS file
 def write_highlights_js(highlights, file_name):
-  file_content = f'// @flow \n\nconst termHighlights = {json.dumps(highlights, indent=2)};\n\nexport default termHighlights;\n'
+  json_content = json.dumps(highlights, indent=2)
+  file_content = f'// @flow \n\nconst termHighlights = {json_content};\n\nexport default termHighlights;\n'
   file_path = f'/data/highlight/{file_name}-highlights.js'
   os.makedirs(os.path.dirname(ROOTPATH + file_path), exist_ok=True)
 
