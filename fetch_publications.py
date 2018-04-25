@@ -2,6 +2,9 @@
 # Fetch data and write information files for certain number of papers information
 
 # TODO:
+# - Run untill scholar.py doesnt return anything anymore (or every 65), randomize mac address with https://github.com/feross/SpoofMAC,
+#   repeat, finish script, change mac address to original mac address 78:4f:43:85:84:33
+# - Edit VLDB overview for new citations
 # - Rerun scripts for +- 1-50 extra documents
 # - Update config numbers for total papers based on csv file
 # - Chechk if pdf_ur correct
@@ -12,11 +15,13 @@ import operator
 import csv
 import re
 import urllib3
+import subprocess
+import random
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 import os
-from config import booktitles, ROOTPATH, facets
+from config import booktitles, ROOTPATH, facets, default_mac_address, scholar_query_limit
 from lib import scholar
 # https://github.com/lukasschwab/arxiv.py
 # https://github.com/titipata/arxivpy
@@ -29,9 +34,6 @@ def main():
   # ################### #
   #      SETUP ARGS     #
   # ################### #
-
-  # TODO:
-  # For multi-file input support check PDFNLT main.py
 
   parser = argparse.ArgumentParser(description='Fetch all information for papers')
   parser.add_argument('database', metavar='Database', type=str,
@@ -51,7 +53,7 @@ def main():
 
   client = MongoClient('localhost:4321')
   db = client.pub
-  booktitles = ['ACL']
+  booktitles = ['VLDB']
 
   # ########################### #
   #      FETCH PUBLICATIONS     #
@@ -64,6 +66,7 @@ def main():
     paper_info = [] #[_id, number_entities, year, ee, dblpkey, journal, title, type]
     counter_pub = 0
     counter_pdf = 0
+    counter_cit = 0
     facets_columns = ';'.join(facets)
     results = db.publications.find({ 'booktitle': booktitle }).skip(skip_items).limit(number_papers).batch_size(100)
     print(f'Fetching {results.count(True)} out of {results.count()} total publications information for conference: {booktitle}')
@@ -72,12 +75,14 @@ def main():
     querier = scholar.ScholarQuerier()
     settings = scholar.ScholarSettings()
     querier.apply_settings(settings)
+    querier.save_cookies()
     scholar_query = scholar.SearchScholarQuery()
 
     for pub in results:
-      if not pub['title'] or not pub['authors']: continue
-      author1 = pub['authors'][0]
+      if not pub['title'] or not pub['authors']: continue        
+
       counter_pub += 1
+      author1 = pub['authors'][0]
       title = pub['title'].lower().capitalize().strip('.')
       paper_info = [pub['_id'], 'false', '-1;-1', '-1', booktitle, pub['ee'], pub['year'], "'%s'" % title, pub['type'], 'author1;author2']
       no_accent_author1 = unidecode.unidecode(author1)
@@ -132,12 +137,12 @@ def main():
         scholar_query.set_phrase(title)
         scholar_query.set_num_page_results(1)
         querier.send_query(scholar_query)
-        querier.save_cookies()
 
         # Print the URL of the first article found
         if querier.articles and title == querier.articles[0]['title'].lower().capitalize().strip('.'):
           print(f'Fetched number citations for {paper_info[0]}: {querier.articles[0]["num_citations"]}')
           paper_info[3] = querier.articles[0]['num_citations']
+          counter_cit += 1
 
       # Add paper information to list
       papers.append(paper_info)
@@ -157,7 +162,7 @@ def main():
     print(f'PDFs downloaded for {counter_pdf}/{counter_pub} publications for {booktitle}')
     print('-----------------------')
     print(f'Finished processing {counter_pub} publications and downloading {counter_pdf} PDFs for {booktitle}')
-    # SAVE OVERVIEW OLD FILE
+    # SAVE OVERVIEW OLD FILE  
 
 # Fetch number of named entities for each papers in specific journal with facet
 def fetch_paper_entities(paper_id, facet, db):
@@ -212,6 +217,16 @@ def to_slug(title):
   # delete duplicate underscores
   filename = '_'.join(list(filter(None, filename.split('_'))))
   return filename
+
+def random_mac_address():
+  return "%02x:%02x:%02x:%02x:%02x:%02x" % (
+    random.randint(0, 255),
+    random.randint(0, 255),
+    random.randint(0, 255),
+    random.randint(0, 255),
+    random.randint(0, 255),
+    random.randint(0, 255)
+  )
 
 if __name__=='__main__':
   main()
