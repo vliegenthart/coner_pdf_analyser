@@ -71,11 +71,10 @@ def main():
     results = db.publications.find({ 'booktitle': booktitle }).skip(skip_items).limit(number_papers).batch_size(100)
     print(f'Fetching {results.count(True)} out of {results.count()} total publications information for conference: {booktitle}')
 
-    # scholar.ScholarConf.COOKIE_JAR_FILE = ROOTPATH + ".scholar-cookies.txt"
     querier = scholar.ScholarQuerier()
     settings = scholar.ScholarSettings()
     querier.apply_settings(settings)
-    querier.save_cookies()
+    # querier.save_cookies()
     scholar_query = scholar.SearchScholarQuery()
 
     for pub in results:
