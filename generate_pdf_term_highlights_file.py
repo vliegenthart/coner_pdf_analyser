@@ -13,6 +13,7 @@ import unidecode
 import json
 import pprint
 from PIL import Image
+import time
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -42,14 +43,14 @@ def main():
   # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
   for file_name in os.listdir(f'data/xhtml_enriched/'):
     file_name = file_name.strip(".xhmtl")
-    term_highlights = { f'{file_name}.pdf': [] }
+    term_highlights = []
 
     for facet in facets:
       booktitle = file_name.split("_")[1]
       json_path = f'data/{database}/{booktitle}/json'
 
       pdf_terms_pages = json.load(open(f'{json_path}/{facet}_{file_name}_pdf_terms_pages.json'))
-      term_highlights[f'{file_name}.pdf'] += generate_term_highlights(pdf_terms_pages, file_name, facet)
+      term_highlights += generate_term_highlights(pdf_terms_pages, file_name, facet)
     
     write_highlights_js(term_highlights, file_name)
 
@@ -69,7 +70,7 @@ def generate_term_highlights(pdf_terms, file_name, facet):
       # if i2 > 2: continue
 
       words_processed = 1
-      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'comment': { 'text': '', 'facet': facet}, 'id': str(term['id']), 'type': 'automatic' }
+      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'metadata': { 'text': '', 'facet': facet, 'type': 'generated', 'timestamp': int(time.time()) }, 'id': str(term['id']), 'pid': f'{file_name}.pdf' }
 
       # Calculate position boundingRect and word rects
       bdr = bdr_to_coord(term['pdf_words'][0]['bdr'].split(','), page_width, page_height)
@@ -133,7 +134,7 @@ def write_highlights_js(highlights, file_name):
   with open(ROOTPATH + file_path, 'w+') as file:
     file.write(file_content)
 
-  len_highlights = len(highlights[f'{file_name}.pdf'])
+  len_highlights = len(highlights)
   
   print(f'Generated {len_highlights} highlights (JS) for {file_name}.pdf: {file_path}')
 
@@ -146,7 +147,7 @@ def write_highlights_json(highlights, file_name):
   with open(ROOTPATH + file_path, 'w+') as file:
     file.write(file_content)
 
-  len_highlights = len(highlights[f'{file_name}.pdf'])
+  len_highlights = len(highlights)
   
   print(f'Generated {len_highlights} highlights (JSON) for {file_name}.pdf: {file_path}')
 
