@@ -35,6 +35,7 @@ def main():
   args = parser.parse_args()
   database = args.database
   
+  term_highlights = []
 
   # ####################################### #
   #      CONVERT TERMS JSON TO REACT JS     #
@@ -43,7 +44,6 @@ def main():
   # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
   for file_name in os.listdir(f'data/xhtml_enriched/'):
     file_name = file_name.strip(".xhmtl")
-    term_highlights = []
 
     for facet in facets:
       booktitle = file_name.split("_")[1]
@@ -52,7 +52,7 @@ def main():
       pdf_terms_pages = json.load(open(f'{json_path}/{facet}_{file_name}_pdf_terms_pages.json'))
       term_highlights += generate_term_highlights(pdf_terms_pages, file_name, facet)
     
-    write_highlights_js(term_highlights, file_name)
+  write_highlights_js(term_highlights)
 
 # Generate array of terms meta-data like position, comment, content and id
 def generate_term_highlights(pdf_terms, file_name, facet):
@@ -125,10 +125,10 @@ def bdr_to_coord(bdr, page_width, page_height):
   return temp
 
 # Write the array of highlights to ES6 JS file
-def write_highlights_js(highlights, file_name):
+def write_highlights_js(highlights):
   json_content = json.dumps(highlights, indent=2)
   file_content = f'// @flow \n\nconst termHighlights = {json_content};\n\nexport default termHighlights;\n'
-  file_path = f'/data/highlight/{file_name}-highlights.js'
+  file_path = f'/data/highlight/term-highlights.js'
   os.makedirs(os.path.dirname(ROOTPATH + file_path), exist_ok=True)
 
   with open(ROOTPATH + file_path, 'w+') as file:
@@ -136,7 +136,7 @@ def write_highlights_js(highlights, file_name):
 
   len_highlights = len(highlights)
   
-  print(f'Generated {len_highlights} highlights (JS) for {file_name}.pdf: {file_path}')
+  print(f'Generated, concatenated and wrote {len_highlights} highlights (JS) to data/highlights/term-highlights.js for papers in data/xhtml_enriched/')
 
 # Write the array of highlights to json file
 def write_highlights_json(highlights, file_name):

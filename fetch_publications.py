@@ -53,7 +53,7 @@ def main():
 
   client = MongoClient('localhost:4321')
   db = client.pub
-  booktitles = ['VLDB']
+  booktitles = ['ICRA']
 
   # ########################### #
   #      FETCH PUBLICATIONS     #
