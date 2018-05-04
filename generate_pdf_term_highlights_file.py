@@ -42,12 +42,13 @@ def main():
   # ####################################### #
 
   # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
-  for file_name in os.listdir(f'data/xhtml_enriched/'):
-    file_name = file_name.strip(".xhmtl")
+  for file_name in os.listdir(f'{ROOTPATH}/data/xhtml_enriched/'):
+    if not file_name.endswith(".xhtml"): continue
+    file_name = file_name.strip(".xhtml")
 
     for facet in facets:
       booktitle = file_name.split("_")[1]
-      json_path = f'data/{database}/{booktitle}/json'
+      json_path = f'{ROOTPATH}/data/{database}/{booktitle}/json'
 
       pdf_terms_pages = json.load(open(f'{json_path}/{facet}_{file_name}_pdf_terms_pages.json'))
       term_highlights += generate_term_highlights(pdf_terms_pages, file_name, facet)
@@ -70,7 +71,7 @@ def generate_term_highlights(pdf_terms, file_name, facet):
       # if i2 > 2: continue
 
       words_processed = 1
-      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'metadata': { 'text': '', 'facet': facet, 'type': 'generated', 'timestamp': int(time.time()) }, 'id': str(term['id']), 'pid': f'{file_name}.pdf' }
+      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'metadata': { 'text': '', 'facet': facet, 'type': 'generated', 'timestamp': int(time.time()) }, 'id': str(term['id']), 'pid': f'{file_name}' }
 
       # Calculate position boundingRect and word rects
       bdr = bdr_to_coord(term['pdf_words'][0]['bdr'].split(','), page_width, page_height)

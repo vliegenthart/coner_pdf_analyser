@@ -5,17 +5,37 @@ Coner Collaborative NER Pipeline Component: Analyse documents (PDFs)
 Run these scripts in this order to generate entity annotations for desired PDF papers: 
 
 - fetch_publications.py:
-  - Parameters: name of database data folder, number of papers to fetch from database, number of items to skip from returned collection, versioning number used to name overview csv for databases
+  - Parameters: name of database data folder e.g. `tse_ner`, number of papers to fetch from database, number of items to skip from returned collection, versioning number used to name overview csv for databases
   - Description: Fetches papers from conferences as indicated in the 'booktitles' array; meta-data from server, various download methods for PDF, full text and number of citations retrieval
   - Example script execution: `python fetch_publications.py tse_ner 20000 0 1`
   - Booktitles usage should be set in the script itself
 
-
 - generate_pdfs_overview.py:
-  - Parameters: name of database data folder
-  - Description: Generates a new overview of fetched papers for conferences filtered on presence of pdf file and sorted on number of citations per paper
+  - Parameters: name of database data folder e.g. `tse_ner`
+  - Description: Generates a new overview of fetched papers for conferences filtered on presence of pdf file and sorted on number of citations per paper. Also generates list of most interesting papers for viewer based on filters and sorting and copies PDFs for top X papers of interesting conference to `data/viewer_pdfs/`
   - Example script execution: `python generate_pdfs_overview.py tse_ner` 
   - Booktitles usage should be set in the script itself
 
-- run_pdfnlt_postprocess.sh
-  - Run `rvm install jruby-9.1.13.0@pdfnlt`
+
+- pdfnlt_find_occurrences.sh:
+  - Prerequisites: 
+    - Have PDFNLT *ADD PUBLIC PDFNLT GITHUB HERE* directory in same parent directory as this project
+    - Put PDFs to be analysed in `../PDFNLT/pdfanalyzer/pdf/` directory
+    - Each PDF needs entity set files (simple text files where every line contains 1 entity) for each facet with file name location `/data/<database_name>/<conference_name>/entity_set/<facet>_<publication_id>_entity_set_0.txt`
+    - Have jruby installed in pfnlt gemset `rvm install jruby-9.1.13.0@pdfnlt`
+  - Parameters: Path to directory with PDFs to be analysed e.g. `../PDFNLT/pdfanalyzer/pdf/`
+  - Description: Takes PDFs, analyses them with PDFNLT to generate files like full text, split up sentences, sentence metadata, xhtml, etc.
+  - Example scrip execution: `bash pdfnlt_find_occurrences.sh tse_ner ../PDFNLT/pdfanalyzer/pdf/`
+
+- copy_xhtmls_to_xhtml_raw_and_enriched.sh:
+
+-  scripts/find_entity_occurrences.py
+
+- GENERATE JS papers-list.js in data/term-highlights.js
+
+- generate_pdf_term_highlights_file.py:
+  - Parameters: name of database data folder e.g. `tse_ner`
+  - Description: Iterates over publication names in `data/xhtml_enriched/` folder and creates array of all term highlight objects (containing content, position and metadata information) for every term occurrence for every facet in selected publications. Outputs all concatenated highlights in `highlights/term-highlights.js/json`
+  - Example script execution: `python generate_pdf_term_highlights_file.py tse_ner` 
+
+
