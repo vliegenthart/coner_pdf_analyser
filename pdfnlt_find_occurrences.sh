@@ -45,8 +45,11 @@ then
   exit 1
 fi
 
-echo $2
 xhtmls=()
+
+echo "Copying data/viewer_pdfs/ to ../PDFNLT/pdfanalyzer/pdf/"
+cp data/viewer_pdfs/* ../PDFNLT/pdfanalyzer/pdf/
+
 shopt -s nullglob
 
 
@@ -184,7 +187,8 @@ echo "----------------------------------------"
 echo "-     FIND ENTITIES & ENRICH XHTML     -"
 echo "----------------------------------------"
 
-python scripts/find_entity_occurrences.py tse_ner
+# SPLIT UP
+# python scripts/find_entity_occurrences.py tse_ner
 
 # TO DEBUG RUN SINGLE PAPER FOR NEXT EXECUTION
 # rm "../PDFNLT/pdfanalyzer/train/TUD-LTE.csv"
