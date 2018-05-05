@@ -20,6 +20,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # TODO
 # - Automatically copy generated highlights files to react app
 
+file_names = []
+file_names_title = []
+
 def main():
 
   # ################### #
@@ -39,8 +42,6 @@ def main():
   #      CONVERT TERMS JSON TO REACT JS     #
   # ####################################### #
 
-  file_names = []
-
   for file_name in os.listdir(f'{ROOTPATH}/data/xhtml_enriched/'):
     if not file_name.endswith(".xhtml"): continue
     file_name = file_name.strip(".xhtml")
@@ -53,6 +54,11 @@ def main():
   # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
   for paper in papers_overview:
 
+    file_name = paper[0]
+    paper_title = paper[7].strip('\'')
+
+    file_names_title.append({"pid": file_name, "title": paper_title})
+
     for facet in facets:
       booktitle = file_name.split("_")[1]
       json_path = f'{ROOTPATH}/data/{database}/{booktitle}/json'
@@ -61,11 +67,13 @@ def main():
       term_highlights += generate_term_highlights(pdf_terms_pages, paper, facet)
     
   write_highlights_js(term_highlights)
-  write_papers_js(file_names)
+  write_papers_js(file_names_title)
 
 # Generate array of terms meta-data like position, comment, content and id
 def generate_term_highlights(pdf_terms, paper, facet):
   file_name = paper[0]
+  paper_title = paper[7].strip('\'')
+
   highlights = []
   number_pages = len(pdf_terms)
 
@@ -80,7 +88,7 @@ def generate_term_highlights(pdf_terms, paper, facet):
       # if i2 > 2: continue
 
       words_processed = 1
-      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'metadata': { 'text': '', 'facet': facet, 'type': 'generated', 'timestamp': int(time.time()) }, 'id': str(term['id']), 'pid': f'{file_name}', 'title': paper[7].strip('\'') }
+      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'metadata': { 'text': '', 'facet': facet, 'type': 'generated', 'timestamp': int(time.time()) }, 'id': str(term['id']), 'pid': f'{file_name}', 'title': paper_title }
 
       # Calculate position boundingRect and word rects
       bdr = bdr_to_coord(term['pdf_words'][0]['bdr'].split(','), page_width, page_height)
