@@ -25,7 +25,6 @@ def main():
   parser.add_argument('database', metavar='Database', type=str,
                      help='database name of data collection')
   
-
   args = parser.parse_args()
   database = args.database
 
@@ -44,6 +43,7 @@ def main():
   
   for facet in facets:
     total_occurrences = []
+    
     for file_name in os.listdir(f'{ROOTPATH}/data/viewer_pdfs/'):
       pdf_name = file_name.strip(".pdf")
       print(pdf_name)
