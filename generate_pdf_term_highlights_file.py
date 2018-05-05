@@ -20,7 +20,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # TODO
 # - Automatically copy generated highlights files to react app
 
-
 def main():
 
   # ################### #
@@ -31,7 +30,6 @@ def main():
   parser.add_argument('database', metavar='Database', type=str,
                      help='database name of data collection')
 
-
   args = parser.parse_args()
   database = args.database
   
@@ -41,22 +39,33 @@ def main():
   #      CONVERT TERMS JSON TO REACT JS     #
   # ####################################### #
 
-  # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
+  file_names = []
+
   for file_name in os.listdir(f'{ROOTPATH}/data/xhtml_enriched/'):
     if not file_name.endswith(".xhtml"): continue
     file_name = file_name.strip(".xhtml")
+
+    file_names.append(file_name)
+
+  papers_overview = read_overview_csv()
+  papers_overview = [paper for paper in papers_overview if paper[0] in file_names]
+
+  # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
+  for paper in papers_overview:
 
     for facet in facets:
       booktitle = file_name.split("_")[1]
       json_path = f'{ROOTPATH}/data/{database}/{booktitle}/json'
 
       pdf_terms_pages = json.load(open(f'{json_path}/{facet}_{file_name}_pdf_terms_pages.json'))
-      term_highlights += generate_term_highlights(pdf_terms_pages, file_name, facet)
+      term_highlights += generate_term_highlights(pdf_terms_pages, paper, facet)
     
   write_highlights_js(term_highlights)
+  write_papers_js(file_names)
 
 # Generate array of terms meta-data like position, comment, content and id
-def generate_term_highlights(pdf_terms, file_name, facet):
+def generate_term_highlights(pdf_terms, paper, facet):
+  file_name = paper[0]
   highlights = []
   number_pages = len(pdf_terms)
 
@@ -71,7 +80,7 @@ def generate_term_highlights(pdf_terms, file_name, facet):
       # if i2 > 2: continue
 
       words_processed = 1
-      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'metadata': { 'text': '', 'facet': facet, 'type': 'generated', 'timestamp': int(time.time()) }, 'id': str(term['id']), 'pid': f'{file_name}' }
+      highlight = { 'content': {'text': term['text']}, 'position': { 'pageNumber': int(term['page_number']) + 1}, 'metadata': { 'text': '', 'facet': facet, 'type': 'generated', 'timestamp': int(time.time()) }, 'id': str(term['id']), 'pid': f'{file_name}', 'title': paper[7].strip('\'') }
 
       # Calculate position boundingRect and word rects
       bdr = bdr_to_coord(term['pdf_words'][0]['bdr'].split(','), page_width, page_height)
@@ -139,6 +148,20 @@ def write_highlights_js(highlights):
   
   print(f'Generated, concatenated and wrote {len_highlights} highlights (JS) to data/highlights/term-highlights.js for papers in data/xhtml_enriched/')
 
+# Write the array of highlights to ES6 JS file
+def write_papers_js(file_names):
+  json_content = json.dumps(file_names, indent=2)
+  file_content = f'// @flow \n\nconst papersList = {json_content};\n\nexport default papersList;\n'
+  file_path = f'/data/highlight/papers-list.js'
+  os.makedirs(os.path.dirname(ROOTPATH + file_path), exist_ok=True)
+
+  with open(ROOTPATH + file_path, 'w+') as file:
+    file.write(file_content)
+
+  len_papers = len(file_names)
+  
+  print(f'Wrote list of papers of length {len_papers} to data/highlights/papers-list.js')
+
 # Write the array of highlights to json file
 def write_highlights_json(highlights, file_name):
   file_content = json.dumps(highlights, indent=2)
@@ -151,6 +174,15 @@ def write_highlights_json(highlights, file_name):
   len_highlights = len(highlights)
   
   print(f'Generated {len_highlights} highlights (JSON) for {file_name}.pdf: {file_path}')
+
+# Read papers and number entities overview file
+def read_overview_csv():
+  file_path = f'{ROOTPATH}/data/total/total/total_papers_has_pdf_v1.csv'
+  csv_raw = open(file_path, 'r').readlines()
+  csv_raw = [line.rstrip('\n').split(',') for line in csv_raw]
+  csv_raw.pop(0) # Remove header column
+  
+  return csv_raw
 
 if __name__=='__main__':
   main()
