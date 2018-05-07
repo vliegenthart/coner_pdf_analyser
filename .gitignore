@@ -5,8 +5,9 @@
 **/pdf/
 **/xhtml/
 **/data/*/
-elsapy_config.json
+results/
 misc/
+elsapy_config.json
 **/.DS_Store
 **/*/.DS_Store
 config.py
