@@ -8,6 +8,7 @@
 results/
 misc/
 elsapy_config.json
+elsapy_example.py
 **/.DS_Store
 **/*/.DS_Store
 config.py
