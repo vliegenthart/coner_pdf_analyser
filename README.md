@@ -19,7 +19,7 @@ Run these scripts in this order to generate entity annotations for desired PDF p
 
 - pdfnlt_find_occurrences.sh:
   - Prerequisites: 
-    - Have PDFNLT *ADD PUBLIC PDFNLT GITHUB HERE* directory in same parent directory as this project
+    - Have [PDFNLT](https://github.com/KMCS-NII/PDFNLT-1.0) directory in same parent directory as this project
     - Put PDFs to be analysed in `../PDFNLT/pdfanalyzer/pdf/` directory
     - Each PDF needs entity set files (simple text files where every line contains 1 entity) for each facet with file name location `/data/<database_name>/<conference_name>/entity_set/<facet>_<publication_id>_entity_set_0.txt`
     - Have jruby installed in pfnlt gemset `rvm install jruby-9.1.13.0@pdfnlt`
