@@ -14,6 +14,7 @@ import json
 import pprint
 from PIL import Image
 import time
+import math
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -136,10 +137,10 @@ def bdr_to_coord(bdr, page_width, page_height):
   temp = bdr[:]
   if not len(temp) == 4: return temp
 
-  temp[0] = float(temp[0]) * page_width
-  temp[2] = float(temp[2]) * page_width
-  temp[1] = float(temp[1]) * page_height
-  temp[3] = float(temp[3]) * page_height
+  temp[0] = math.floor(float(temp[0]) * page_width)-1 # x1
+  temp[2] = math.ceil(float(temp[2]) * page_width)+2 # x2
+  temp[1] = math.floor(float(temp[1]) * page_height)-1 # y1
+  temp[3] = math.ceil(float(temp[3]) * page_height) # y2
   return temp
 
 # Write the array of highlights to ES6 JS file

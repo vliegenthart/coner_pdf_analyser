@@ -29,7 +29,7 @@ Run these scripts in this order to generate entity annotations for desired PDF p
 
 - copy_xhtmls_to_xhtml_raw_and_enriched.sh:
 
--  scripts/find_entity_occurrences.py
+- scripts/find_entity_occurrences.py
 
 - GENERATE JS papers-list.js in data/term-highlights.js
 
