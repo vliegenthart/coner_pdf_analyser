@@ -44,7 +44,9 @@ def main():
   for facet in facets:
     total_occurrences = []
     
-    for file_name in os.listdir(f'{ROOTPATH}/data/viewer_pdfs/'):
+    for file_name in os.listdir(f'{ROOTPATH}/data/test_pdfs/'):
+      if not file_name.endswith(".pdf"): continue
+
       pdf_name = file_name.strip(".pdf")
       print(pdf_name)
       booktitle = file_name.split("_")[1].lower()

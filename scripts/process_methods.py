@@ -17,9 +17,12 @@ from config import PDFNLT_PATH
 # TODO
 # - Set max_number_words dynamically depending in term set max terms words occurance?
 
+# Splitting errors:
+# - Doesn recognize space in sentence. Could move create_term_info algorithm to process_xhtml#enrich_xhtml
+
 max_entity_words = 4
 tag_attrs = { 'class': '', 'id': '', 'data-bdr': '', 'data-ftype': '', 'data-space': ''}
-word_split_pattern = r'([` \t\=~!@#$%^&*()_+\[\]{};\'\\:"|<,./<>?])'
+word_split_pattern = r'([` \t\=~!@#$%^&*()_+\[\]{};\'\\:"\\:”\\:“|<,./<>?])'
 error_sents = []
 number_entities_rejected = 0
 
