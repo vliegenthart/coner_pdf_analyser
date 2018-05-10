@@ -139,8 +139,8 @@ def bdr_to_coord(bdr, page_width, page_height):
 
   temp[0] = math.floor(float(temp[0]) * page_width)-1 # x1
   temp[2] = math.ceil(float(temp[2]) * page_width)+2 # x2
-  temp[1] = math.floor(float(temp[1]) * page_height)-1 # y1
-  temp[3] = math.ceil(float(temp[3]) * page_height) # y2
+  temp[1] = math.floor(float(temp[1]) * page_height)-2 # y1
+  temp[3] = math.ceil(float(temp[3]) * page_height)-1 # y2
   return temp
 
 # Write the array of highlights to ES6 JS file
