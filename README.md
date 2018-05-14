@@ -24,7 +24,7 @@ Run these scripts in this order to generate entity annotations for desired PDF p
     - Each PDF needs entity set files (simple text files where every line contains 1 entity) for each facet with file name location `/data/<database_name>/<conference_name>/entity_set/<facet>_<publication_id>_entity_set_0.txt`
     - Have jruby installed in pfnlt gemset `rvm install jruby-9.1.13.0@pdfnlt`
   - Parameters: Path to directory with PDFs to be analysed e.g. `../PDFNLT/pdfanalyzer/pdf/`
-  - Description: Takes PDFs, analyses them with PDFNLT to generate files like full text, split up sentences, sentence metadata, xhtml, etc.
+  - Description: Takes PDFs `from data/viewer_pdfs/`, copies them to `../PDFNLT/pdfanalyzer/pdf/` analyses them with PDFNLT to generate files like full text, split up sentences, sentence metadata, xhtml, etc.
   - Example scrip execution: `bash pdfnlt_find_occurrences.sh tse_ner ../PDFNLT/pdfanalyzer/pdf/`
 
 - copy_xhtmls_to_xhtml_raw_and_enriched.sh:
