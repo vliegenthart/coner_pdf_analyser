@@ -52,7 +52,6 @@ cp data/viewer_pdfs/* ../PDFNLT/pdfanalyzer/pdf/
 
 shopt -s nullglob
 
-
 if [ -f "$2" ]
 then
   # Individual files
@@ -183,9 +182,9 @@ else
   sh "../PDFNLT/postprocess/postprocess.sh" "$pdf_dir"
 fi
 
-echo "----------------------------------------"
-echo "-     FIND ENTITIES & ENRICH XHTML     -"
-echo "----------------------------------------"
+# echo "----------------------------------------"
+# echo "-     FIND ENTITIES & ENRICH XHTML     -"
+# echo "----------------------------------------"
 
 # SPLIT UP
 # python scripts/find_entity_occurrences.py tse_ner

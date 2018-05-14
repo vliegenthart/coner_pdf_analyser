@@ -48,7 +48,6 @@ def main():
       if not file_name.endswith(".pdf"): continue
 
       pdf_name = file_name.strip(".pdf")
-      print(pdf_name)
       booktitle = file_name.split("_")[1].lower()
 
       pdf_term_info_list = find_pdf_terms_in_sent_tsv(database, facet, pdf_name, booktitle)

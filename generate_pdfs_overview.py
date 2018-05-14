@@ -10,7 +10,7 @@ from operator import itemgetter
 import os
 from config import booktitles, ROOTPATH, facets, use_in_viewer, min_ne_threshold, nr_top_papers
 import unidecode
-from shutil import copyfile
+from shutil import copyfile, rmtree
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -37,6 +37,12 @@ def main():
   total_nr_entities_list = []
   total_nr_entities_filtered_list = []
 
+  # Reset data/viewer_pdfs directory
+  base_path = f'{ROOTPATH}/data'
+  viewer_pdfs = f'{base_path}/viewer_pdfs/'
+  rmtree(viewer_pdfs)
+  os.makedirs(os.path.dirname(viewer_pdfs), exist_ok=True)
+
   # ############################### #
   #      GENERATE OVERVIEW FILES    #
   # ############################### #
@@ -60,16 +66,14 @@ def main():
     citations_list = [int(paper[3]) for paper in papers_has_pdf]
     papers_has_pdf.sort(key=lambda x: int(x[3]), reverse=True)
 
-
     # Generate overview files for booktitle
     write_arrays_to_csv(papers_has_pdf, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'], version)
 
     # Copy PDFs of top config.nr_top_papers to data/viewer_pdfs/
     for paper in papers_has_pdf[:nr_top_papers]:
       file_name = paper[0]+".pdf"
-      base_path = src = f'{ROOTPATH}/data/'
       src = f'{base_path}/{database}/{paper[4]}/pdf/{file_name}'
-      dst = f'{base_path}/viewer_pdfs/{file_name}'
+      dst = f'{viewer_pdfs}{file_name}'
       copyfile(src, dst)
 
     # Extend lists to generate total overview file for all booktitles
@@ -82,6 +86,7 @@ def main():
     print("BOOKTITLE:", booktitle)
     if len(papers_has_pdf) is 0:
       print("No papers found with PDF and extracted entities...")
+      print('-----------------------\n')
       continue
     else:
       print("Papers with PDF and fetched citations:", str(len(papers_has_pdf)) + "/" + str(len(papers)))
@@ -99,7 +104,7 @@ def main():
 
   # Print final statistics
   print('----- TOTAL STATISTICS -----')
-  if len(papers_has_pdf) is 0:
+  if len(total_papers_has_pdf) is 0:
     print("No papers found with PDF and extracted entities...")
   else:
     print("Papers with PDF and fetched citations:", str(len(total_papers_has_pdf)) + "/" + str(len(total_papers)))

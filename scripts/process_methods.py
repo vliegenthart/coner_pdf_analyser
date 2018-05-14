@@ -19,6 +19,7 @@ from config import PDFNLT_PATH
 
 # Splitting errors:
 # - Doesn recognize space in sentence. Could move create_term_info algorithm to process_xhtml#enrich_xhtml
+# - doesnt recognize digit + letter split
 
 max_entity_words = 4
 tag_attrs = { 'class': '', 'id': '', 'data-bdr': '', 'data-ftype': '', 'data-space': ''}

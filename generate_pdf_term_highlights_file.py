@@ -8,6 +8,7 @@ import re
 import urllib3
 from operator import itemgetter
 import os
+from pathlib import Path
 from config import booktitles, ROOTPATH, PDFNLT_PATH, facets
 import unidecode
 import json
@@ -54,18 +55,20 @@ def main():
 
   # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
   for paper in papers_overview:
-
     file_name = paper[0]
     paper_title = paper[7].strip('\'')
 
-    file_names_title.append({"pid": file_name, "title": paper_title})
 
-    for facet in facets:
+    for index, facet in enumerate(facets):
       booktitle = file_name.split("_")[1]
       json_path = f'{ROOTPATH}/data/{database}/{booktitle}/json'
 
       pdf_terms_pages = json.load(open(f'{json_path}/{facet}_{file_name}_pdf_terms_pages.json'))
-      term_highlights += generate_term_highlights(pdf_terms_pages, paper, facet)
+      temp_highlights = generate_term_highlights(pdf_terms_pages, paper, facet)
+
+      if index is 0 and len(temp_highlights) > 0:
+        term_highlights += temp_highlights
+        file_names_title.append({"pid": file_name, "title": paper_title})
     
   write_highlights_js(term_highlights)
   write_papers_js(file_names_title)
@@ -78,7 +81,12 @@ def generate_term_highlights(pdf_terms, paper, facet):
   highlights = []
   number_pages = len(pdf_terms)
 
-  # Get pdf page width/height ratio
+  # Get pdf page width/height ratio (AND CHECK IF IMAGE EXISTS)
+
+  if not Path(f'{PDFNLT_PATH}/xhtml/images/{file_name}/{file_name}-01.png').is_file():
+    print("NO PNGS EXTRACT BY PDFNLT:", f'{PDFNLT_PATH}/xhtml/images/{file_name}/{file_name}-01.png')
+    return []
+
   with Image.open(f'{PDFNLT_PATH}/xhtml/images/{file_name}/{file_name}-01.png') as page:
     page_width, page_height = page.size
   
