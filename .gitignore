@@ -1,5 +1,5 @@
 # Custom 
-
+coner_document_analyser.sublime-workspace
 **/entity_set/
 **/full_text/
 **/pdf/
@@ -13,7 +13,6 @@ elsapy_example.py
 **/*/.DS_Store
 config.py
 .ruby-version
-coner_document_analyser.sublime-workspace
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
