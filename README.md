@@ -25,9 +25,12 @@ Run these scripts in this order to generate entity annotations for desired PDF p
     - Have jruby installed in pfnlt gemset `rvm install jruby-9.1.13.0@pdfnlt`
   - Parameters: Path to directory with PDFs to be analysed e.g. `../PDFNLT/pdfanalyzer/pdf/`
   - Description: Takes PDFs `from data/viewer_pdfs/`, copies them to `../PDFNLT/pdfanalyzer/pdf/` analyses them with PDFNLT to generate files like full text, split up sentences, sentence metadata, xhtml, etc.
-  - Example scrip execution: `bash pdfnlt_find_occurrences.sh tse_ner ../PDFNLT/pdfanalyzer/pdf/`
+  - Example script execution: `bash pdfnlt_find_occurrences.sh tse_ner ../PDFNLT/pdfanalyzer/pdf/`
 
-- copy_xhtmls_to_xhtml_raw_and_enriched.sh:
+- copy_pdfnlt_xhtmls_to_local_xhtmls.py:
+  - Parameters: name of database data folder e.g. `tse_ner`
+  - Description: Copies xhtml files as listed in `data/viewer_pdfs` from `../PDFNLT/pdfanalyzer/xhtml/` to `data/xhtml_raw/` and `data/xhtml_enriched` to prepare for entity extraction and xhtml enrichment for xhtmls
+  - Example script execution: `python copy_pdfnlt_xhtmls_to_local_xhtmls.py tse_ner`
 
 - scripts/find_entity_occurrences.py
 
