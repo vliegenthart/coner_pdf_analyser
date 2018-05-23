@@ -10,12 +10,18 @@ Run these scripts in this order to generate entity annotations for desired PDF p
   - Example script execution: `python fetch_publications.py tse_ner 20000 0 1`
   - Booktitles usage should be set in the script itself
 
+- generate_overview_top_by_citations_and_has_pdf.py
+- Copy data/top_full_text/ tp TSE-NER
+- Copy paper_overview_total.csv to TSE-NER conference directories
+- Extract entities from data/top_full_text/ in TSE-NER
+- Replace `{conference}_papers_overview_total` here with new one generated in TSE-NER
+- Copy and replace new entity sets from TSE-NER if performance better
+
 - generate_pdfs_overview.py:
   - Parameters: name of database data folder e.g. `tse_ner`
   - Description: Generates a new overview of fetched papers for conferences filtered on presence of pdf file and sorted on number of citations per paper. Also generates list of most interesting papers for viewer based on filters and sorting and copies PDFs for top X papers of interesting conference to `data/viewer_pdfs/`
   - Example script execution: `python generate_pdfs_overview.py tse_ner` 
   - Booktitles usage should be set in the script itself
-
 
 - pdfnlt_find_occurrences.sh:
   - Prerequisites: 
