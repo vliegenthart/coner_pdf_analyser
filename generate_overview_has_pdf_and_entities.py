@@ -8,7 +8,7 @@ import re
 import urllib3
 from operator import itemgetter
 import os
-from config import booktitles, ROOTPATH, facets, use_in_viewer, min_ne_threshold, nr_top_papers
+from config import booktitles, ROOTPATH, facets, use_in_viewer, min_ne_threshold, nr_top_papers, seedsize, iteration
 import unidecode
 from shutil import copyfile, rmtree
 
@@ -43,12 +43,12 @@ def main():
   rmtree(viewer_pdfs)
   os.makedirs(os.path.dirname(viewer_pdfs), exist_ok=True)
 
-  # ############################### #
-  #      GENERATE OVERVIEW FILES    #
-  # ############################### #
+  # ########################################### #
+  #      GENERATE OVERVIEW FILES FOR HAS PDF    #
+  # ########################################### #
 
   for booktitle in booktitles:
-    papers = read_overview_csv(database, booktitle, 0, 1)
+    papers = read_overview_csv(database, booktitle, seedsize, iteration)
     total_papers.extend(papers)
 
     # Needs to have PDF paper
@@ -67,7 +67,7 @@ def main():
     papers_has_pdf.sort(key=lambda x: int(x[3]), reverse=True)
 
     # Generate overview files for booktitle
-    write_arrays_to_csv(papers_has_pdf, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'], version)
+    write_arrays_to_csv(papers_has_pdf, booktitle, database, ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'], seedsize, iteration)
 
     # Copy PDFs of top config.nr_top_papers to data/viewer_pdfs/
     for paper in papers_has_pdf[:nr_top_papers]:
@@ -100,7 +100,7 @@ def main():
 
   # Concatenated results from all papers
   total_papers_has_pdf.sort(key=lambda x: int(x[3]), reverse=True)
-  write_arrays_to_csv(total_papers_has_pdf, 'total', 'total', ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'], 1)
+  write_arrays_to_csv(total_papers_has_pdf, 'total', 'total', ['paper_id', 'has_pdf', facets_columns, 'number_citations', 'booktitle', 'pdf_url', 'year', 'title', 'type', 'authors'], seedsize, iteration)
 
   # Print final statistics
   print('----- TOTAL STATISTICS -----')
@@ -121,8 +121,8 @@ def nr_ne(entity_string):
   return sum(map(int, entity_string.split(";")))
 
 # Read papers and number entities overview file
-def read_overview_csv(database, booktitle, skip, version):
-  file_path = f'{ROOTPATH}/data/{database}/{booktitle.lower()}/{booktitle.lower()}_papers_overview_total.csv'
+def read_overview_csv(database, booktitle, seedsize, iteration):
+  file_path = f'{ROOTPATH}/data/{database}/{booktitle.lower()}/{booktitle.lower()}_papers_overview_total_limited_{seedsize}_{iteration}.csv'
   csv_raw = open(file_path, 'r').readlines()
   csv_raw = [line.rstrip('\n').split(',') for line in csv_raw]
   csv_raw.pop(0) # Remove header column
@@ -130,8 +130,8 @@ def read_overview_csv(database, booktitle, skip, version):
   return csv_raw
 
 # Write list of tuples to csv file
-def write_arrays_to_csv(array_list, booktitle, database, column_names, version=1):
-  file_path = f'{ROOTPATH}/data/{database}/{booktitle.lower()}/{booktitle.lower()}_papers_has_pdf_v{version}.csv'
+def write_arrays_to_csv(array_list, booktitle, database, column_names, seedsize, iteration):
+  file_path = f'{ROOTPATH}/data/{database}/{booktitle.lower()}/{booktitle.lower()}_papers_enough_entities_{seedsize}_{iteration}.csv'
   os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
   with open(file_path, 'w+') as outputFile:
@@ -143,6 +143,3 @@ def write_arrays_to_csv(array_list, booktitle, database, column_names, version=1
 
 if __name__=='__main__':
   main()
-
-
-

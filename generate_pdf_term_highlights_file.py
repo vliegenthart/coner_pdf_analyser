@@ -9,7 +9,7 @@ import urllib3
 from operator import itemgetter
 import os
 from pathlib import Path
-from config import booktitles, ROOTPATH, PDFNLT_PATH, facets
+from config import booktitles, ROOTPATH, PDFNLT_PATH, facets, seedsize, iteration
 import unidecode
 import json
 import pprint
@@ -44,13 +44,13 @@ def main():
   #      CONVERT TERMS JSON TO REACT JS     #
   # ####################################### #
 
-  for file_name in os.listdir(f'{ROOTPATH}/data/xhtml_enriched/'):
-    if not file_name.endswith(".xhtml"): continue
-    file_name = file_name.strip(".xhtml")
+  for file_name in os.listdir(f'{ROOTPATH}/data/viewer_pdfs/'):
+    if not file_name.endswith(".pdf"): continue
+    file_name = file_name.strip(".pdf")
 
     file_names.append(file_name)
 
-  papers_overview = read_overview_csv()
+  papers_overview = read_overview_csv(seedsize, iteration)
   papers_overview = [paper for paper in papers_overview if paper[0] in file_names]
 
   # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
@@ -66,9 +66,11 @@ def main():
       pdf_terms_pages = json.load(open(f'{json_path}/{facet}_{file_name}_pdf_terms_pages.json'))
       temp_highlights = generate_term_highlights(pdf_terms_pages, paper, facet)
 
-      if index is 0 and len(temp_highlights) > 0:
+      if len(temp_highlights) > 0:
         term_highlights += temp_highlights
-        file_names_title.append({"pid": file_name, "title": paper_title})
+        
+        # Prevent double writing of papers to paper list because of multiple facets
+        if index is 0: file_names_title.append({"pid": file_name, "title": paper_title})
     
   write_highlights_js(term_highlights)
   write_papers_js(file_names_title)
@@ -193,8 +195,8 @@ def write_highlights_json(highlights, file_name):
   print(f'Generated {len_highlights} highlights (JSON) for {file_name}.pdf: {file_path}')
 
 # Read papers and number entities overview file
-def read_overview_csv():
-  file_path = f'{ROOTPATH}/data/total/total/total_papers_has_pdf_v1.csv'
+def read_overview_csv(seedsize, iteration):
+  file_path = f'{ROOTPATH}/data/total/total/total_papers_enough_entities_{seedsize}_{iteration}.csv'
   csv_raw = open(file_path, 'r').readlines()
   csv_raw = [line.rstrip('\n').split(',') for line in csv_raw]
   csv_raw.pop(0) # Remove header column
