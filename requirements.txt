@@ -1,9 +1,11 @@
-arxiv==0.2.2
-pymongo==3.3.0
+scopus==0.6.0
+tqdm==4.19.1.post1
+Unidecode==1.0.22
+urllib3==1.20
 jsonpickle==0.9.5
 elsapy==0.4.6
-scopus==0.6.0
-urllib3==1.20
-Unidecode==1.0.22
-tqdm==4.19.1.post1
+pymongo==3.3.0
+arxiv==0.2.2
+BeautifulSoup==3.2.1
+Pillow==5.1.0
 beautifulsoup4==4.6.0

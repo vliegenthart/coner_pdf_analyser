@@ -21,7 +21,7 @@ import random
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 import os
-from config import booktitles, ROOTPATH, facets, default_mac_address, scholar_query_limit
+from config import booktitles, ROOTPATH, facets, scholar_query_limit
 from lib import scholar
 # https://github.com/lukasschwab/arxiv.py
 # https://github.com/titipata/arxivpy
