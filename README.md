@@ -2,12 +2,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![GitHub release](https://img.shields.io/github/release/vliegenthart/coner_document_analyser.svg)](https://github.com/vliegenthart/coner_document_analyser/releases)
 
-CDA generates a candidate set of publications to receive feedback on in CIV, by analysing publications from the corpus and rank them according to features like number of times paper has been cited, number of distinct automatically extracted entities for each category and availability of PDF.
+CDA generates a candidate set of publications to receive feedback on in CIDV, by analysing publications from the corpus and rank them according to features like number of times paper has been cited, number of distinct automatically extracted entities for each category and availability of PDF.
 
 ## Coner Collaborative NER Pipeline
 Named Entity Recognition (NER) for rare long-tail entities as e.g., often found in domain-specific scientific publications is a challenging task, as typically the extensive training data and test data for fine-tuning NER algorithms is lacking. Recent approaches presented promising solutions relying on training NER algorithms in a iterative distantly-supervised fashion, thus limiting human interaction to only providing a small set of seed terms. Such approaches heavily rely on heuristics in order to cope with the limited training data size. As these heuristics are prone to failure, the overall achievable performance is limited. In this paper, we therefore introduce a collaborative approach which incrementally incorporates human feedback on the relevance of extracted entities into the training cycle of such iterative NER algorithms. This approach, called Coner, allows to still train new domain specific rare long-tail NER extractors with low costs, but with ever increasing performance while the algorithm is actively used. 
 
-Coner consists of 3 modules, namely the Coner Document Analyser (CDA), [Coner Interactive Viewer (CIV)](https://github.com/vliegenthart/coner_interactive_viewer) and [Coner Feedback Analyser (CFA)](https://github.com/vliegenthart/coner_feedback_analyser). Module 1 (CDA) generates a candidate set of publications to receive feedback on in CIV, by analysing publications from the corpus and rank them according to features like number of times paper has been cited, number of distinct automatically extracted entities for each category and availability of PDF. Module 2 (CIV) visualizes the extracted entities and allows users to both give feedback on categorical relevance and select new relevant entities. Finally, module 3 (CFA) analyses the given feedback and generates a list of entities for each category with metadata like relevance score, amount of feedback, etc. This final output can be utilized by the NER algorithm to improve the expansion and filtering step of it's training cycle for the next iteration.
+Coner consists of 3 modules, namely the Coner Document Analyser (CDA), [Coner Interactive Viewer (CIVD)](https://github.com/vliegenthart/coner_interactive_viewer) and [Coner Feedback Analyser (CFA)](https://github.com/vliegenthart/coner_feedback_analyser). Module 1 (CDA) generates a candidate set of publications to receive feedback on in CIDV, by analysing publications from the corpus and rank them according to features like number of times paper has been cited, number of distinct automatically extracted entities for each category and availability of PDF. Module 2 (CIDV) visualizes the extracted entities and allows users to both give feedback on categorical relevance and select new relevant entities. Finally, module 3 (CFA) analyses the given feedback and generates a list of entities for each category with metadata like relevance score, amount of feedback, etc. This final output can be utilized by the NER algorithm to improve the expansion and filtering step of it's training cycle for the next iteration.
 
 You can read more about CDA and the Coner pipeline in the [Coner Collaborative NER paper](https://github.com/vliegenthart/coner_interactive_viewer/blob/master/public/pdf/coner.pdf).
 
@@ -23,11 +23,16 @@ The following steps are needed to generate entity annotations for desired PDF pa
   - Example script execution: `python fetch_publications.py tse_ner 20000 0 1`
   - Booktitles usage should be set in the script itself
 
+2 Options:
 - Copy data/top_full_text/ to [TSE-NER](https://github.com/mvallet91/SmartPub-TSENER)
 - Copy paper_overview_total.csv to TSE-NER conference directories
 - Extract entities from data/top_full_text/ in TSE-NER
 - Replace `{conference}_papers_overview_total` here with new one generated in TSE-NER
 - Copy and replace new entity sets from TSE-NER if performance better
+
+OR 
+
+- Extract entities with TSE-NER for paper corpus for both facets
 
 - generate_overview_top_by_citations_and_has_pdf.py:
   - Parameters: name of database data folder e.g. `tse_ner`
@@ -66,7 +71,7 @@ The following steps are needed to generate entity annotations for desired PDF pa
   - Description: Iterates over publication names in `data/xhtml_enriched/` folder and creates array of all term highlight objects (containing content, position and metadata information) for every term occurrence for every facet in selected publications. Outputs all concatenated highlights in `highlight/term-highlights.js`. Also outputs the list of viewer papers in `highlight/papers-list.js`.
   - Example script execution: `python generate_pdf_term_highlights_file.py tse_ner`
 
-- Copy `highlight/term-highlights.js` and `highlight/papers-list.js` files to CIV's `src/highlights/` folder.
+- Copy `highlight/term-highlights.js` and `highlight/papers-list.js` files to CIDV's `src/highlights/` folder.
 
 ## Contributing
 Please feel free to contribute to the project by forking or creating a custom branch with a pull request. You can contact me on with any question, suggestions or other inquiries.

@@ -13,6 +13,8 @@ elsapy_example.py
 **/*/.DS_Store
 config.py
 .ruby-version
+coner_document_analyser.scholar-cookies.txt
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
