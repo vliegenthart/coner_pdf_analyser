@@ -28,6 +28,10 @@ error_sents = []
 number_entities_rejected = 0
 
 def read_entity_set(file_path):
+  if not os.path.exists(file_path): 
+    print("NOT FOUND", file_path)
+    return []
+
   global number_entities_rejected
   entity_set_text = list(set(open(file_path, 'r').readlines()))
   entity_set = []
@@ -132,8 +136,10 @@ def find_pdf_terms_in_sent_tsv(database, facet, pdf_name, booktitle):
   # ############################ #
 
   # print("Analysing & processing sentences...")
-
-  entity_set = read_entity_set(f'data/{database}/{booktitle.lower()}/entity_set/{facet}_{pdf_name}_entity_set_0.txt')
+  if facet == "doubly":
+    entity_set = read_entity_set(f'data/entity_sets_doubly/entity_set_doubly_{booktitle.lower()}__{pdf_name}__0.txt')
+  else:
+    entity_set = read_entity_set(f'data/{database}/{booktitle.lower()}/entity_set/{facet}_{pdf_name}_entity_set_0.txt')
 
   sent_list, sent_obj, error_sents = process_sentences(f'{PDFNLT_PATH}/text/{pdf_name}.sent.tsv', pdf_name)
 

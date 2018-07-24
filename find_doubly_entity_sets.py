@@ -4,6 +4,14 @@ import os
 import time
 import csv
 from config import ROOTPATH, PDFNLT_PATH, facets, max_entity_words, tse_ner_conferences, iteration, nr_top_papers_cited, min_doubly_threshold
+from shutil import copyfile, rmtree
+
+
+# Reset data/viewer_pdfs directory
+base_path = f'{ROOTPATH}/data'
+viewer_pdfs = f'{base_path}/viewer_pdfs/'
+rmtree(viewer_pdfs)
+os.makedirs(os.path.dirname(viewer_pdfs), exist_ok=True)
 
 base_entity_set_path = f'{ROOTPATH}/data/entity_sets'
 database = 'tse_ner'
@@ -56,7 +64,7 @@ def find_doubly_entities(iteration):
     papers_has_pdf = [paper for paper in papers if paper[1] == 'true']
 
     # Needs to have citations fetched from Google Scholar
-    papers_has_pdf = [paper[2:4] + [paper[0]] + paper[5:6] for paper in papers_has_pdf if int(paper[3]) > -1]
+    papers_has_pdf = [paper[2:4] + [paper[0]] + paper[4:6] for paper in papers_has_pdf if int(paper[3]) > -1]
 
     # Needs to contain more than threshold of doubly recognised entities
     papers_has_pdf = [paper for paper in papers_has_pdf if paper[0] >= min_doubly_threshold]
@@ -69,9 +77,20 @@ def find_doubly_entities(iteration):
 
     # Generate overview files for booktitle
     file_path = f'{ROOTPATH}/data/total/overviews_doubly_filtered/{conference.lower()}_papers_overview_total_doubly_filtered_{iteration}.csv'
-    write_arrays_to_csv(file_path, papers_has_pdf, conference, database, iteration, ['paper_id', 'nr_doubly', 'number_citations', 'booktitle', 'pdf_url']) 
+    write_arrays_to_csv(file_path, papers_has_pdf, conference, database, iteration, ['nr_doubly', 'number_citations', 'paper_id', 'booktitle', 'pdf_url']) 
+
+    copy_pdfs(papers_has_pdf, conference, database)
 
     print(conference, missing_paper, len(papers))
+
+# Copy PDFs to PDFNLT/pdfanalyzer/pdf/ directory
+def copy_pdfs(papers, conference, database):
+  for paper in papers:
+    file_name = f'{paper[2]}.pdf'
+    src = f'{ROOTPATH}/data/{database}/{conference.lower()}/pdf/{file_name}'
+    dst = f'{viewer_pdfs}{file_name}'
+
+    copyfile(src, dst)
 
 # Read papers and number entities overview file
 def read_overview_csv(database, booktitle):

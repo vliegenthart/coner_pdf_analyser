@@ -8,7 +8,7 @@ import re
 from process_methods import find_pdf_terms_in_sent_tsv
 from process_xhtml import read_xhtml, enrich_xhtml
 import statistics
-from config import ROOTPATH, PDFNLT_PATH, facets
+from config import ROOTPATH, PDFNLT_PATH, facets, tse_ner_conferences
 import os
 
 def main():
@@ -41,6 +41,48 @@ def main():
   #      ENRICH XHTML WITH TERMS    #
   # ############################### #
   
+  # find_occurrences_unfiltered(database)
+  find_occurrences_doubly(database)
+
+def find_occurrences_doubly(database):
+  facet = "doubly"
+  total_occurrences = []
+
+  for conf in tse_ner_conferences:
+    booktitle = conf.lower()
+    papers = read_overview_csv(booktitle)
+
+    for paper in papers:
+
+      pdf_name = paper[2]
+
+      pdf_term_info_list = find_pdf_terms_in_sent_tsv(database, facet, pdf_name, booktitle)
+      term_occurrences = [e.text for e in pdf_term_info_list if len(e.pdf_terms) > 0]
+
+      occ_path = f'data/occurrence_sets_doubly/'
+      os.makedirs(os.path.dirname(occ_path), exist_ok=True)
+
+      with open(f'{occ_path}/occurrence_set_doubly_{booktitle.lower()}__{pdf_name}__0.txt', 'w+') as outputFile:
+        for t in term_occurrences:
+          outputFile.write(f'{t}\n')
+
+      total_occurrences.append([pdf_name, term_occurrences, paper[1]])
+
+      xhtml_soup = read_xhtml(f'data/xhtml_enriched/{pdf_name}.xhtml')
+      
+      body = xhtml_soup.find("body")
+      if not body.get('class') or (body.get('class') and not f'enriched-{facet}' in body.get('class')):
+        enrich_xhtml(pdf_term_info_list, xhtml_soup, database, facet, pdf_name, booktitle)
+
+  total_occurrences = [paper for paper in total_occurrences if paper[0].split("_")[1].upper() in tse_ner_conferences and len(paper[1]) > 0]
+  total_occurrences.sort(key=lambda x: (x[0], x[1]))
+
+  with open(f'data/total/{facet}_papers_terms_overview.csv', 'w+') as outputFile:
+    outputFile.write("paper_id,number_terms, number_cited\n")
+    for [pdf_name, term_occurrences, nr_cited] in total_occurrences:
+      outputFile.write(str(len(term_occurrences)) + "," + nr_cited + "," + pdf_name + "\n")
+
+def find_occurrences_unfiltered(database):
   for facet in facets:
     total_occurrences = []
     
@@ -72,6 +114,17 @@ def main():
       outputFile.write("paper_id,number_terms\n")
       for [pdf_name, term_occurrences] in total_occurrences:
         outputFile.write(pdf_name + "," + str(len(term_occurrences)) + "\n")
+
+# Read papers and number entities overview file
+def read_overview_csv(booktitle):
+  file_path = f'{ROOTPATH}/data/total/overviews_doubly_filtered/{booktitle.lower()}_papers_overview_total_doubly_filtered_0.csv'
+  csv_raw = open(file_path, 'r').readlines()
+  csv_raw = [line.rstrip('\n').split(',') for line in csv_raw if len(line.rstrip('\n').split(',')) > 1]
+  csv_raw.pop(0) # Remove header column
+  
+  return csv_raw
+
+
 
 if __name__=='__main__':
 

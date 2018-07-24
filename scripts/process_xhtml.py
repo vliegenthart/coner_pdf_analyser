@@ -30,7 +30,7 @@ def enrich_xhtml(pdf_term_list, xhtml_soup, database, facet, pdf_name, booktitle
         if not span_word or f'facet-{facet}' in span_word['class']: continue
 
         # Temporary, because first XHTML processing, this feature wasn't there yet
-        if 'facet-dataset' in span_word['class']: span_word['class'].append('is-entity')
+        if 'facet-doubly' in span_word['class']: span_word['class'].append('is-entity')
 
         if 'is-entity' in span_word['class']:
           span_word['data-entity_id'] += "_" + str(entity.id)
