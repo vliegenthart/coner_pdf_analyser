@@ -9,7 +9,7 @@ import urllib3
 from operator import itemgetter
 import os
 from pathlib import Path
-from config import booktitles, ROOTPATH, PDFNLT_PATH, facets, seedsize, iteration
+from config import booktitles, ROOTPATH, PDFNLT_PATH, facets, seedsize, iteration, tse_ner_conferences
 import unidecode
 import json
 import pprint
@@ -24,6 +24,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 file_names = []
 file_names_title = []
+
+# CUSTOM DOUBLY ENTITIES
+facets = ["doubly"]
 
 def main():
 
@@ -50,7 +53,11 @@ def main():
 
     file_names.append(file_name)
 
-  papers_overview = read_overview_csv(seedsize, iteration)
+  # papers_overview = read_overview_csv(seedsize, iteration)
+
+  # CUSTOM DOUBLY ENTITIES
+  papers_overview = read_doubly_overviews_csv(iteration, tse_ner_conferences)
+
   papers_overview = [paper for paper in papers_overview if paper[0] in file_names]
 
   # Iterate over viewer XHTML files, extract name and open FILENAME_pdf_terms_pages.JSON
@@ -202,6 +209,20 @@ def read_overview_csv(seedsize, iteration):
   csv_raw.pop(0) # Remove header column
   
   return csv_raw
+
+# Read papers and number entities overview file
+def read_doubly_overviews_csv(iteration, conferences):
+  csv_total = []
+
+  for conf in conferences:
+    conf = conf.lower()
+    file_path = f'{ROOTPATH}/data/total/overviews_doubly/{conf}_papers_overview_total_doubly_{iteration}.csv'
+    csv_raw = open(file_path, 'r').readlines()
+    csv_raw = [line.rstrip('\n').split(',') for line in csv_raw]
+    csv_raw.pop(0) # Remove header column
+    csv_total = csv_total + csv_raw
+  
+  return csv_total
 
 if __name__=='__main__':
   main()
