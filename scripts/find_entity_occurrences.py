@@ -51,7 +51,8 @@ def find_occurrences_doubly(database):
   for conf in tse_ner_conferences:
     booktitle = conf.lower()
     papers = read_overview_csv(booktitle)
-
+  
+    print(conf, len(papers))
     for paper in papers:
 
       pdf_name = paper[2]
@@ -116,8 +117,8 @@ def find_occurrences_unfiltered(database):
         outputFile.write(pdf_name + "," + str(len(term_occurrences)) + "\n")
 
 # Read papers and number entities overview file
-def read_overview_csv(booktitle):
-  file_path = f'{ROOTPATH}/data/total/overviews_doubly_filtered/{booktitle.lower()}_papers_overview_total_doubly_filtered_0.csv'
+def read_overview_csv(booktitle, overviews_dir="total/overviews/"):
+  file_path = f'{ROOTPATH}/data/{overviews_dir}{booktitle.lower()}_papers_overview.csv'
   csv_raw = open(file_path, 'r').readlines()
   csv_raw = [line.rstrip('\n').split(',') for line in csv_raw if len(line.rstrip('\n').split(',')) > 1]
   csv_raw.pop(0) # Remove header column

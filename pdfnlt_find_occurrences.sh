@@ -187,7 +187,7 @@ fi
 # echo "----------------------------------------"
 
 # SPLIT UP
-# python scripts/find_entity_occurrences.py tse_ner
+python scripts/find_entity_occurrences.py tse_ner
 
 # TO DEBUG RUN SINGLE PAPER FOR NEXT EXECUTION
 # rm "../PDFNLT/pdfanalyzer/train/TUD-LTE.csv"

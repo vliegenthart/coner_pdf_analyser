@@ -15,6 +15,7 @@ config.py
 .ruby-version
 coner_document_analyser.scholar-cookies.txt
 data/
+feedback_august_christoph
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
