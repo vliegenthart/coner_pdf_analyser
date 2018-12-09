@@ -47,6 +47,10 @@ def read_entity_set(file_path):
 
 # Process and create list of sentences with meta-data
 def process_sentences(file_path, pdf_name):
+  if not os.path.exists(file_path): 
+    print("NOT FOUND", file_path)
+    return [], {}, []
+
   sent_list_raw = open(file_path, 'r').readlines()
   sent_list_raw = [sent.rstrip('\n') for sent in sent_list_raw]
   sent_list_raw.pop(0) # Remove header column

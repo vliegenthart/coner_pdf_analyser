@@ -9,6 +9,11 @@ from tqdm import tqdm, trange
 import os
 
 def read_xhtml(file_path):
+  if not os.path.exists(file_path): 
+    print("NOT FOUND", file_path)
+    return None
+
+
   xhtml = open(file_path, 'r').read()
   xhtml_soup = BeautifulSoup(xhtml, 'html.parser')
 

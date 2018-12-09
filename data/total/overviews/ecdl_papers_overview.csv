@@ -1,4 +1,8 @@
 nr_doubly,number_citations,paper_id,booktitle,pdf_url
-7,43,conf_ercimdl_BiryukovD10,ECDL,http://arxiv.org/pdf/1012.5396v1
-4,29,conf_ercimdl_PetricekCHCG05,ECDL,http://arxiv.org/pdf/cs/0703043v1
-5,21,conf_ercimdl_LagozeKCEJW06,ECDL,http://arxiv.org/pdf/cs/0603024v1
+5,-1,conf_ercimdl_LagozeKCEJW06,ECDL,NOURLFOUND
+2,-1,conf_ercimdl_PayetteL00,ECDL,NOURLFOUND
+2,-1,conf_ercimdl_SmithKN06,ECDL,NOURLFOUND
+4,-1,conf_ercimdl_PetricekCHCG05,ECDL,NOURLFOUND
+7,-1,conf_ercimdl_BiryukovD10,ECDL,NOURLFOUND
+0,-1,conf_ercimdl_RamosM00,ECDL,NOURLFOUND
+1,-1,conf_ercimdl_Warner05,ECDL,NOURLFOUND

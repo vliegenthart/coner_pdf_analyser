@@ -1,2 +1,12 @@
 nr_doubly,number_citations,paper_id,booktitle,pdf_url
-6,3,conf_ercimdl_KanhabuaKNNRT16,TPDL,http://arxiv.org/pdf/1701.08256v1
+0,-1,conf_ercimdl_FedoryszakTB13,TPDL,NOURLFOUND
+2,-1,conf_ercimdl_KellyBWN13,TPDL,NOURLFOUND
+0,-1,conf_ercimdl_AlsumWNS13,TPDL,NOURLFOUND
+1,-1,conf_ercimdl_AturbanNW15,TPDL,NOURLFOUND
+3,-1,conf_ercimdl_DulischKS15,TPDL,NOURLFOUND
+1,-1,conf_ercimdl_HolzmannSR16,TPDL,NOURLFOUND
+1,-1,conf_ercimdl_LukeSM12,TPDL,NOURLFOUND
+3,-1,conf_ercimdl_SchaerML12,TPDL,NOURLFOUND
+6,-1,conf_ercimdl_KanhabuaKNNRT16,TPDL,NOURLFOUND
+2,-1,conf_ercimdl_AlNoamanyAWN13,TPDL,NOURLFOUND
+3,-1,conf_ercimdl_MaderHI12,TPDL,NOURLFOUND

@@ -5,11 +5,15 @@
 
 import argparse
 import re
-from process_methods import find_pdf_terms_in_sent_tsv
+from process_methods import find_pdf_terms_in_sent_tsv, read_entity_set
 from process_xhtml import read_xhtml, enrich_xhtml
 import statistics
 from config import ROOTPATH, PDFNLT_PATH, facets, tse_ner_conferences
 import os
+import json
+import csv
+
+generate_overview = True
 
 def main():
 
@@ -47,12 +51,15 @@ def main():
 def find_occurrences_doubly(database):
   facet = "doubly"
   total_occurrences = []
-
+  
+  # GENERATE OVERVIEW IF FILTERING NOT APPLICABLE
+  if generate_overview: generate_paper_overviews(database, tse_ner_conferences, "doubly")
+  
   for conf in tse_ner_conferences:
     booktitle = conf.lower()
+
     papers = read_overview_csv(booktitle)
   
-    print(conf, len(papers))
     for paper in papers:
 
       pdf_name = paper[2]
@@ -71,9 +78,10 @@ def find_occurrences_doubly(database):
 
       xhtml_soup = read_xhtml(f'data/xhtml_enriched/{pdf_name}.xhtml')
       
-      body = xhtml_soup.find("body")
-      if not body.get('class') or (body.get('class') and not f'enriched-{facet}' in body.get('class')):
-        enrich_xhtml(pdf_term_info_list, xhtml_soup, database, facet, pdf_name, booktitle)
+      if xhtml_soup:
+        body = xhtml_soup.find("body")
+        if not body.get('class') or (body.get('class') and not f'enriched-{facet}' in body.get('class')):
+          enrich_xhtml(pdf_term_info_list, xhtml_soup, database, facet, pdf_name, booktitle)
 
   total_occurrences = [paper for paper in total_occurrences if paper[0].split("_")[1].upper() in tse_ner_conferences and len(paper[1]) > 0]
   total_occurrences.sort(key=lambda x: (x[0], x[1]))
@@ -125,7 +133,38 @@ def read_overview_csv(booktitle, overviews_dir="total/overviews/"):
   
   return csv_raw
 
+# Generate paper overviews if paper filtering by metadata and occurrences is not applicable
+def generate_paper_overviews(database, confs, facet="doubly"):
+  for conf in confs:
+    papers = []
+    for file_name in os.listdir(f'{ROOTPATH}/data/{database}/{conf}/pdf/'):
+      if not file_name.endswith(".pdf"): continue
 
+      pdf_name = file_name.strip(".pdf")
+
+      if facet == "doubly":
+        entity_set = read_entity_set(f'data/entity_sets_doubly/entity_set_doubly_{conf}__{pdf_name}__0.txt')
+      else:
+        entity_set = read_entity_set(f'data/{database}/{booktitle.lower()}/entity_set/{facet}_{pdf_name}_entity_set_0.txt')
+
+      len_ent = len([ent.text for ent in entity_set])
+      papers.append([len_ent, -1, pdf_name, conf, "NOURLFOUND"])
+
+    write_arrays_to_csv(papers, conf, database, ['nr_doubly', 'number_citations', 'paper_id', 'booktitle', 'pdf_url'])
+
+# Write list of tuples to csv file
+def write_arrays_to_csv(array_list, booktitle, database, column_names, overviews_dir="total/overviews/"):
+  file_path = f'{ROOTPATH}/data/{overviews_dir}{booktitle.lower()}_papers_overview.csv'
+  os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+  with open(file_path, 'w+') as outputFile:
+    csv_out=csv.writer(outputFile)
+    csv_out.writerow(column_names)
+    
+    for array1 in array_list:
+      csv_out.writerow(array1)
+
+  print("Wrote overview file for conference:", booktitle)
 
 if __name__=='__main__':
 

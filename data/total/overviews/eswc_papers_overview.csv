@@ -1,2 +1,5 @@
 nr_doubly,number_citations,paper_id,booktitle,pdf_url
-4,4,conf_esws_PereraMAST16,ESWC,http://arxiv.org/pdf/1707.08470v1
+4,-1,conf_esws_PereraMAST16,ESWC,NOURLFOUND
+3,-1,conf_esws_KuhnBNK13,ESWC,NOURLFOUND
+2,-1,conf_esws_DebattistaL0A15,ESWC,NOURLFOUND
+3,-1,conf_esws_ZervakisTSK16,ESWC,NOURLFOUND

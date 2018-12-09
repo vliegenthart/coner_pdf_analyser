@@ -1,5 +1,13 @@
 nr_doubly,number_citations,paper_id,booktitle,pdf_url
-5,37,conf_jcdl_SandersonS10,JCDL,http://arxiv.org/pdf/1003.2643v2
-4,8,conf_jcdl_BrunelleN13,JCDL,http://arxiv.org/pdf/1307.5685v1
-5,1,conf_jcdl_KleinS13,JCDL,http://arxiv.org/pdf/1305.4890v1
-4,0,conf_jcdl_HolzmannR14,JCDL,http://arxiv.org/pdf/1702.01179v1
+3,-1,conf_jcdl_BornandBS16,JCDL,NOURLFOUND
+2,-1,conf_jcdl_ShiLM10,JCDL,NOURLFOUND
+4,-1,conf_jcdl_HolzmannR14,JCDL,NOURLFOUND
+3,-1,conf_jcdl_AlNoamanyWN13,JCDL,NOURLFOUND
+0,-1,conf_jcdl_ShamsM12,JCDL,NOURLFOUND
+2,-1,conf_jcdl_LagozeKJCCS05,JCDL,NOURLFOUND
+3,-1,conf_jcdl_BollenS06,JCDL,NOURLFOUND
+2,-1,conf_jcdl_WeissmanABL15,JCDL,NOURLFOUND
+5,-1,conf_jcdl_SandersonS10,JCDL,NOURLFOUND
+5,-1,conf_jcdl_KleinS13,JCDL,NOURLFOUND
+4,-1,conf_jcdl_BrunelleN13,JCDL,NOURLFOUND
+1,-1,conf_jcdl_CartledgeN14,JCDL,NOURLFOUND
